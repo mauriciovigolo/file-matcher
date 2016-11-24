@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "outDir": "build/file-finder",
+        "moduleResolution": "node",
+        "rootDir": ".",
+        "sourceMap": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "declaration": true,
+        "lib": [
+            "es2015"
+        ]
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

@@ -1,0 +1,56 @@
+{
+    "name": "file-finder",
+    "version": "0.0.1",
+    "description": "Return list of files, matching by file attributes or/and contents",
+    "main": "index.js",
+    "scripts": {
+        "clean": "rm -rf ./build",
+        "tslint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**'",
+        "cp-package": "cp ./package.json ./build/file-finder/",
+        "cp-tests-sandbox": "cp -R ./test/sandbox ./build/file-finder/test/",
+        "build": "npm run clean &&  npm run tslint && tsc && npm run cp-package && echo '\n===> End of Build process'",
+        "test": "npm run build && npm run cp-tests-sandbox && echo '\n===> Testing... ' && jasmine ./build/file-finder/test/*.spec.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tisatec/file-finder.git"
+    },
+    "keywords": [
+        "fs",
+        "file finder",
+        "recursive",
+        "glob",
+        "file match",
+        "walk",
+        "walker",
+        "events",
+        "promise",
+        "contents",
+        "find",
+        "directory",
+        "grep",
+        "search",
+        "sniffer",
+        "regex",
+        "typescript"
+    ],
+    "author": "mauriciovigolo@gmail.com",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/tisatec/file-finder/issues"
+    },
+    "homepage": "https://github.com/tisatec/file-finder#readme",
+    "devDependencies": {
+        "@types/async": "^2.0.33",
+        "@types/jasmine": "^2.5.38",
+        "@types/micromatch": "^2.3.29",
+        "@types/node": "^6.0.50",
+        "jasmine": "^2.4.1",
+        "tslint": "^3.10.2",
+        "typescript": "^2.0.10"
+    },
+    "dependencies": {
+        "async": "^2.1.2",
+        "micromatch": "^2.3.11"
+    }
+}

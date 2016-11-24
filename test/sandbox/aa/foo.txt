@@ -1,0 +1,13 @@
+from: https://help.github.com/articles/open-source-licensing/
+
+Which license is right for me?!
+
+Don't fret! Choosing an open source license can be confusing. That's why we created choosealicense.com, a website that helps you make decisions about how to license your code. A software license tells others what they can and can't do with your source code. There's a handful of standard and well-known software licenses out there to choose from.
+
+What happens if I don't choose a license?
+
+You're under no obligation to choose a license. It's your right not to include one with your code or project, but please be aware of the implications. Generally speaking, the absence of a license means that the default copyright laws apply. This means that you retain all rights to your source code and that nobody else may reproduce, distribute, or create derivative works from your work. This might not be what you intend.
+
+Even if this is what you intend, if you publish your source code in a public repository on GitHub, you have accepted the Terms of Service which do allow other GitHub users some rights. Specifically, you allow others to view and fork your repository within the GitHub site.
+
+If you want others to use, copy, modify, or contribute back to your project, we strongly encourage you to include an open source license.
