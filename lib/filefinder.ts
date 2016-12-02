@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Mauricio Gemelli Vigolo. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://github.com/mauriciovigolo/file-matcher/LICENSE
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mm from 'micromatch';
@@ -10,7 +18,23 @@ import { ProcessingDir } from './interfaces/processingdir';
 import { FilterPredicate } from './interfaces/filterpredicate';
 import { PredicateOperator } from './enums/predicateoperator';
 
-
+/**
+ * @whatItDoes Finds the file by name / contents, complying the configuration of {FindOptions} criteria.
+ *
+ * @howToUse
+ * ```
+ * let finder: FileFinder = new FileFinder();
+ *
+ * const criteria: FindOptions = { path: 'pathToSearch', filters: 'obj literal as {FileFilter}', fileContent: 'RegExp to match the contents of a file' };
+ *
+ * finder.find(criteria);
+ * ```
+ *
+ * @description
+ *
+ *
+ * @stable
+ */
 export class FileFinder extends EventEmitter {
 
     private filters: FileFilter;
@@ -22,7 +46,7 @@ export class FileFinder extends EventEmitter {
 
     constructor() {
         super();
-        this.setMaxListeners(10000);
+        this.setMaxListeners(0);
     }
 
     /**
@@ -50,12 +74,6 @@ export class FileFinder extends EventEmitter {
         });
     }
 
-    /**
-     *
-     *
-     * @param filter -
-     * @param contentFilter -
-     */
     private init(criteria: FindOptions) {
         this.filters = criteria.filters;
         this.contentFilter = criteria.fileContent;
@@ -81,7 +99,6 @@ export class FileFinder extends EventEmitter {
             }
         }
 
-        // Events
         this.on('endSearchSubDirectory', (parentDir, resolve) => {
             let stillProcessingSubdir = this.processing.findIndex(processingItem => processingItem.parentDir === parentDir) > -1;
 

@@ -1,5 +1,5 @@
 {
-    "name": "file-finder",
+    "name": "file-matcher",
     "version": "0.0.1",
     "description": "Return list of files, matching by file attributes or/and contents",
     "main": "index.js",
@@ -18,9 +18,9 @@
     "keywords": [
         "fs",
         "file finder",
+        "file match",
         "recursive",
         "glob",
-        "file match",
         "walk",
         "walker",
         "events",
