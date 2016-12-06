@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://github.com/mauriciovigolo/file-matcher/LICENSE
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as mm from 'micromatch';
 import * as async from 'async';
 import { EventEmitter } from 'events';
+import * as fs from 'fs';
+import * as mm from 'micromatch';
+import * as path from 'path';
 
 import { FindOptions } from './interfaces/findoptions';
 import { FileFilter } from './interfaces/filefilter';
@@ -19,23 +19,51 @@ import { FilterPredicate } from './interfaces/filterpredicate';
 import { PredicateOperator } from './enums/predicateoperator';
 
 /**
- * @whatItDoes Finds the file by name / contents, complying the configuration of {FindOptions} criteria.
+ * @whatItDoes Finds file(s) by name / contents, according to the {@link FindOptions} criteria.
  *
  * @howToUse
  * ```
  * let finder: FileFinder = new FileFinder();
  *
- * const criteria: FindOptions = { path: 'pathToSearch', filters: 'obj literal as {FileFilter}', fileContent: 'RegExp to match the contents of a file' };
+ * const criteria: FindOptions = {
+ *      path: 'pathToSearch',
+ *      filters: {
+ *          pattern: ['*.js'], // glob
+ *          size: {
+ *                  value: 1000,
+ *                  operator: PredicateOperator.GreaterThan;
+ *          },
+ *          accessTime:  {
+ *                  value: new Date(),
+ *                  operator: PredicateOperator.LessThan;
+ *          },
+ *          changeTime:  {
+ *                  value: new Date(),
+ *                  operator: PredicateOperator.LessThan;
+ *          },
+ *          birthTime: {
+  *                  value: new Date(),
+ *                  operator: PredicateOperator.LessThan;
+ *          }
+ *      },
+ *      fileContent: 'RegExp to match the contents of a file'
+ * };
  *
  * finder.find(criteria);
  * ```
  *
  * @description
+ * Finds file(s) according to the criteria - by filename (using globs), size, creation, access and change time. Finally it's possible to refine
+ * the search by using a regex to match file contents. The search can be done recursively or not.
  *
- *
- * @stable
+ * This class extends the Node's EventEmitter. The following events are triggered:
+ * - preSearchDirectory: emitted when the search starts to look for matching files in new directory.
+ * - initSearchSubDirectory: emitted in the beginning of the search in a subdirectory.
+ * - endSearchSubDirectory: emitted when the search in the subdirectory ends.
+ * - endSearchDirectory: emitted when the search ends. This event is emitted only once.
+ * - contentMatch: emitted when the content regex is matched.
  */
-export class FileFinder extends EventEmitter {
+export class FileMatcher extends EventEmitter {
 
     private filters: FileFilter;
     private contentFilter: RegExp;
@@ -43,17 +71,33 @@ export class FileFinder extends EventEmitter {
     private files: string[];
     private processing: ProcessingDir[];
 
-
     constructor() {
         super();
         this.setMaxListeners(0);
     }
 
     /**
+     * Starts the search according to the {@link FindOptions} criteria. The search
+     * supports glob searching for the filenames, including aditional criteria by
+     * change, birth and access time. It can be executed recursively or not. The
+     * default search is not recursive.
      *
+     * The content of the matched files can be also checked using a RegExp.
      *
+     * First of all, the files are filtered by the {@link FileFilter} and after that,
+     * the found files are matched by the RegExp, but only if the contentMatch attribute
+     * is informed.
      *
-     * @param criteria -
+     * This class extends the Node's EventEmitter. List of events:
+     * - preSearchDirectory: emitted when the search starts to look for matching files in new directory. Returns the corresponding DIR.
+     * - initSearchSubDirectory: emitted in the beginning of the search in a subdirectory. Returns the SUBDIR.
+     * - endSearchSubDirectory: emitted when the search in the subdirectory ends. Returns the SUBDIR.
+     * - endSearchDirectory: emitted when the search ends. This event is emitted only once. Returns the DIR.
+     * - contentMatch: emitted when the content regex is matched. Returns the filename.
+     *
+     * @param {@link FindOptions} - criteria
+     *
+     * @return {Promise} returns a promise to send the results of the find execution.
      */
     find(criteria: FindOptions): Promise<string[]> {
         let files: Array<string> = [];
@@ -74,6 +118,12 @@ export class FileFinder extends EventEmitter {
         });
     }
 
+    /**
+     * Loads and prepares the FileMatcher attributes, applying the filters
+     * and registering the callback functions events.
+     *
+     * @param {FindOptions} - criteria.
+     */
     private init(criteria: FindOptions) {
         this.filters = criteria.filters;
         this.contentFilter = criteria.fileContent;
@@ -108,6 +158,12 @@ export class FileFinder extends EventEmitter {
         });
     }
 
+    /**
+     * Filter the files, reading the directory and applying the filters.
+     *
+     * @param {string} dir - directory to be searched.
+     * @param {any} callback - async's callback.
+     */
     private filterFiles(dir: string, callback: any) {
         this.readDirectory(dir)
             .then(() => {
@@ -118,6 +174,11 @@ export class FileFinder extends EventEmitter {
             });
     }
 
+    /**
+     * Filter files by content.
+     *
+     * @param {any} callback - async's callback.
+     */
     private filterFileContent(callback: any) {
         let self = this;
         let matchingFiles: Array<string> = [];
@@ -143,6 +204,12 @@ export class FileFinder extends EventEmitter {
         }
     }
 
+    /**
+     * List all files and directories of a directory, applying the
+     * glob filter and other filters.
+     *
+     * @param {string} dir - directory to be searched.
+     */
     private readDirectory(dir: string): Promise<void> {
         let self = this;
 
@@ -162,18 +229,29 @@ export class FileFinder extends EventEmitter {
                     self.endFileSearch(dir, resolve);
                 }
 
-                let totalItensLista: number = list.length - 1;
+                let totalItensList: number = list.length - 1;
 
                 list.forEach(function (item, index) {
                     item = path.resolve(dir, item);
 
-                    self.checkAndApplyFilters(dir, item, resolve, reject, totalItensLista, index);
+                    self.checkAndApplyFilters(dir, item, resolve, reject, totalItensList, index);
                 });
             });
         });
     }
 
-    private checkAndApplyFilters(dir: string, item: string, resolve: Function, reject: Function, totalItensDir: number, indexItemAtual: number) {
+    /**
+     * Checks if the current item is a directory - in this case it should be evaluated - if recursive attribute is true, and if it's a file
+     * it checks if the filters are matched.
+     *
+     * @param {string} dir - parent's directory.
+     * @param {string} item - directory item that will checked, if it's a subdirectory or a file.
+     * @param {Function} resolve - promise's resolve function.
+     * @param {Function} reject -  promise's reject function.
+     * @param {number} totalItensDir - total of files/directories inside of dir (parent's directory).
+     * @param {number} indexItem - Index of the present directory item, helping to check if it's time to end the file search.
+     */
+    private checkAndApplyFilters(dir: string, item: string, resolve: Function, reject: Function, totalItensDir: number, indexItem: number) {
         fs.stat(item, (err, stats) => {
             if (err) {
                 reject(err);
@@ -195,7 +273,7 @@ export class FileFinder extends EventEmitter {
                 }
             }
 
-            if (totalItensDir === indexItemAtual) {
+            if (totalItensDir === indexItem) {
                 let stillProcessingSubdir = this.processing.findIndex(processingItem => processingItem.parentDir === dir) > -1;
 
                 if (!stillProcessingSubdir) {
@@ -205,6 +283,19 @@ export class FileFinder extends EventEmitter {
         });
     }
 
+    /**
+     * Applies the filters in the file, checking:
+     * - filename pattern;
+     * - file size;
+     * - file access time;
+     * - file creation time;
+     * - file change time;
+     *
+     * @param {string} file - filename.
+     * @param {fs.Stats} stats - Node's Fs Stats to extract the file infos.
+     *
+     * @return {boolean} returns if the file matches the informed filters.
+     */
     private matchFilters(file: string, stats: fs.Stats): boolean {
         let matchFilter: boolean = true;
 
@@ -251,6 +342,15 @@ export class FileFinder extends EventEmitter {
         return true;
     }
 
+    /**
+     * Makes the conversion of the FilterPredicates Enum to the corresponding operation and
+     * checks if the file is ok.
+     *
+     * @param {any} value - value to be verified
+     * @param {@link FilterPredicate} - predicate.
+     *
+     * @return {boolean} indicates if the file matches or not the Filters.
+     */
     private checkFilterPredicates(value: any, predicate: FilterPredicate): boolean {
         let matchFilter: boolean = false;
 
@@ -272,6 +372,12 @@ export class FileFinder extends EventEmitter {
         return matchFilter;
     }
 
+    /**
+     * Deals with the end of file search, can be a subdirectory or directory.
+     *
+     * @param {string} dir - directory path.
+     * @param {any} resolve - promise's resolve.
+     */
     private endFileSearch(dir: string, resolve: any) {
         let subDir = this.processing.find(processingItem => processingItem.dir === dir);
 
@@ -294,6 +400,13 @@ export class FileFinder extends EventEmitter {
         resolve();
     }
 
+    /**
+     * It does the file read and applies the content RegExp.
+     *
+     * @param {string} file - file name to be loaded and it's content verified.
+     *
+     * @return {Promise} - promise's callback.
+     */
     private readFileContent(file: string): Promise<any> {
         let self = this;
 
@@ -313,4 +426,5 @@ export class FileFinder extends EventEmitter {
             });
         });
     }
+
 }
