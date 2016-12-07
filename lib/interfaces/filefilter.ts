@@ -9,39 +9,31 @@
 import { FilterPredicate } from './filterpredicate';
 
 /**
- * @whatItDoes Finds file(s) by name / contents, according to the {@link FindOptions} criteria.
- *
- * @howToUse
- * ```
- * let finder: FileFinder = new FileFinder();
- *
- * const criteria: FindOptions = {
- *      path: 'pathToSearch',
- *      filters: {
- *
- *      },
- *      fileContent: 'RegExp to match the contents of a file'
- * };
- *
- * finder.find(criteria);
- * ```
- *
- * @description
- * Finds file(s) according to the criteria - by filename (using globs), size, creation, access and change time. Finally it's possible to refine
- * the search by using a regex to match file contents. The search can be done recursively or not.
- *
- * This class extends the Node's EventEmitter. The following events are triggered:
- * - preSearchDirectory: emitted when the search starts to look for matching files in new directory.
- * - initSearchSubDirectory:
- * - endSearchSubDirectory:
- * - endSearchSubDirectory:
- * - endSearchDirectory:
- * - contentMatch:
+ * Declares the interface to configure the available
+ * filters for the file search.
  */
 export interface FileFilter {
+    /**
+     * Glob pattern for looking for files - filenames.
+     * Examples:
+     * '*.js'
+     * ['**','!*.ts']
+     */
     pattern?: string | Array<string>;
+    /**
+     * File size as {@link FilterPredicate}
+     */
     size?: FilterPredicate;
+    /**
+     * File access time as {@link FilterPredicate}
+     */
     accessTime?: FilterPredicate;
+    /**
+     * File change time as {@link FilterPredicate}
+     */
     changeTime?: FilterPredicate;
+    /**
+     * File birth time as {@link FilterPredicate}
+     */
     birthTime?: FilterPredicate;
 }

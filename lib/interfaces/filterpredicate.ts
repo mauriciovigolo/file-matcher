@@ -7,8 +7,17 @@
  */
 import { PredicateOperator } from '../enums/predicateoperator';
 
-
+/**
+ * Declares the interface to define the predicate.
+ */
 export interface FilterPredicate {
-    value: any;
+    /**
+     * Value to be searched, can be a number, Date or string.
+     */
+    value: number | Date | string;
+    /**
+     * Operator to be applied to the value, ie.:
+     * Equal, LessThan,.. as defined in {@link PredicateOperator}.
+     */
     operator: PredicateOperator;
 }
