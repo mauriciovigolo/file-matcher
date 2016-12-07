@@ -7,9 +7,9 @@
  */
 /**
  * @description
- * !! TODO Entry point for all public APIs of the common package.
+ * External library exposition.
  */
-export * from './lib/filefinder';
+export * from './lib/filematcher';
 export * from './lib/interfaces/filefilter';
 export * from './lib/interfaces/findoptions';
 export * from './lib/interfaces/filterpredicate';

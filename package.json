@@ -6,10 +6,10 @@
     "scripts": {
         "clean": "rm -rf ./build",
         "tslint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**'",
-        "cp-package": "cp ./package.json ./build/file-finder/",
-        "cp-tests-sandbox": "cp -R ./test/sandbox ./build/file-finder/test/",
+        "cp-package": "cp ./package.json ./build/file-matcher/",
+        "cp-tests-sandbox": "cp -R ./test/sandbox ./build/file-matcher/test/",
         "build": "npm run clean &&  npm run tslint && tsc && npm run cp-package && echo '\n===> End of Build process'",
-        "test": "npm run build && npm run cp-tests-sandbox && echo '\n===> Testing... ' && jasmine ./build/file-finder/test/*.spec.js"
+        "test": "npm run build && npm run cp-tests-sandbox && echo '\n===> Testing... ' && jasmine ./build/file-matcher/test/*.spec.js"
     },
     "repository": {
         "type": "git",

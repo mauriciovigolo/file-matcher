@@ -33,19 +33,15 @@ import { PredicateOperator } from './enums/predicateoperator';
  *                  value: 1000,
  *                  operator: PredicateOperator.GreaterThan;
  *          },
- *          accessTime:  {
- *                  value: new Date(),
- *                  operator: PredicateOperator.LessThan;
- *          },
- *          changeTime:  {
+ *          modifiedTime:  {
  *                  value: new Date(),
  *                  operator: PredicateOperator.LessThan;
  *          },
  *          birthTime: {
-  *                  value: new Date(),
+ *                  value: new Date(),
  *                  operator: PredicateOperator.LessThan;
  *          }
- *      },
+ *      }
  *      fileContent: 'RegExp to match the contents of a file'
  * };
  *
@@ -53,7 +49,7 @@ import { PredicateOperator } from './enums/predicateoperator';
  * ```
  *
  * @description
- * Finds file(s) according to the criteria - by filename (using globs), size, creation, access and change time. Finally it's possible to refine
+ * Finds file(s) according to the criteria - by filename (using globs), size, creation and modified time. Finally it's possible to refine
  * the search by using a regex to match file contents. The search can be done recursively or not.
  *
  * This class extends the Node's EventEmitter. The following events are triggered:
@@ -67,6 +63,7 @@ export class FileMatcher extends EventEmitter {
 
     private filters: FileFilter;
     private contentFilter: RegExp;
+    private recursiveSearch: boolean;
     private negationFilter: string[];
     private files: string[];
     private processing: ProcessingDir[];
@@ -79,7 +76,7 @@ export class FileMatcher extends EventEmitter {
     /**
      * Starts the search according to the {@link FindOptions} criteria. The search
      * supports glob searching for the filenames, including aditional criteria by
-     * change, birth and access time. It can be executed recursively or not. The
+     * modified and birth time. It can be executed recursively or not. The
      * default search is not recursive.
      *
      * The content of the matched files can be also checked using a RegExp.
@@ -130,22 +127,26 @@ export class FileMatcher extends EventEmitter {
         this.files = [];
         this.processing = [];
 
+        this.recursiveSearch = criteria.recursiveSearch || false;
+
         this.negationFilter = ['**/**'];
 
         let fileGlob = this.filters.pattern;
 
-        if (fileGlob.length && fileGlob.length > 0) {
-            fileGlob = fileGlob as Array<string>;
+        if (fileGlob) {
+            if (fileGlob.length && fileGlob.length > 0) {
+                fileGlob = fileGlob as Array<string>;
 
-            fileGlob.forEach((item, index) => {
-                if (item.indexOf('!') === 0) {
-                    this.negationFilter.push(item);
+                fileGlob.forEach((item, index) => {
+                    if (item.indexOf('!') === 0) {
+                        this.negationFilter.push(item);
+                    }
+                });
+            } else {
+                if (fileGlob.indexOf('!') === 0) {
+                    fileGlob = fileGlob as string;
+                    this.negationFilter.push(fileGlob);
                 }
-            });
-        } else {
-            if (fileGlob.indexOf('!') === 0) {
-                fileGlob = fileGlob as string;
-                this.negationFilter.push(fileGlob);
             }
         }
 
@@ -258,15 +259,18 @@ export class FileMatcher extends EventEmitter {
             }
 
             if (stats.isDirectory()) {
-                this.emit('initSearchSubDirectory', dir);
+                // Should search recursively?
+                if (this.recursiveSearch) {
+                    this.emit('initSearchSubDirectory', dir);
 
-                this.processing.push({
-                    dir: item,
-                    parentDir: dir,
-                    parentResolve: resolve
-                });
+                    this.processing.push({
+                        dir: item,
+                        parentDir: dir,
+                        parentResolve: resolve
+                    });
 
-                this.readDirectory(item);
+                    this.readDirectory(item);
+                }
             } else {
                 if (this.matchFilters(item, stats)) {
                     this.files.push(item);
@@ -287,9 +291,8 @@ export class FileMatcher extends EventEmitter {
      * Applies the filters in the file, checking:
      * - filename pattern;
      * - file size;
-     * - file access time;
      * - file creation time;
-     * - file change time;
+     * - file modified time;
      *
      * @param {string} file - filename.
      * @param {fs.Stats} stats - Node's Fs Stats to extract the file infos.
@@ -309,15 +312,7 @@ export class FileMatcher extends EventEmitter {
 
         // Check file size
         if (this.filters.size) {
-            matchFilter = this.checkFilterPredicates(stats.atime, this.filters.size);
-            if (!matchFilter) {
-                return false;
-            }
-        }
-
-        // Check last file access time
-        if (this.filters.accessTime) {
-            matchFilter = this.checkFilterPredicates(stats.atime, this.filters.accessTime);
+            matchFilter = this.checkFilterPredicates(stats.size, this.filters.size);
             if (!matchFilter) {
                 return false;
             }
@@ -325,15 +320,29 @@ export class FileMatcher extends EventEmitter {
 
         // Filter by file creation time
         if (this.filters.birthTime) {
-            matchFilter = this.checkFilterPredicates(stats.birthtime, this.filters.birthTime);
+            let birthTime = (this.filters.birthTime.value as Date).getTime();
+
+            let filterPredicate: FilterPredicate = {
+                operator: this.filters.birthTime.operator,
+                value: birthTime
+            };
+
+            matchFilter = this.checkFilterPredicates(stats.birthtime.getTime(), filterPredicate);
             if (!matchFilter) {
                 return false;
             }
         }
 
         // Filter by file change time
-        if (this.filters.changeTime) {
-            matchFilter = this.checkFilterPredicates(stats.ctime, this.filters.changeTime);
+        if (this.filters.modifiedTime) {
+            let modifiedTime = (this.filters.modifiedTime.value as Date).getTime();
+
+            let filterPredicate: FilterPredicate = {
+                operator: this.filters.modifiedTime.operator,
+                value: modifiedTime
+            };
+
+            matchFilter = this.checkFilterPredicates(stats.mtime.getTime(), filterPredicate);
             if (!matchFilter) {
                 return false;
             }
@@ -346,12 +355,12 @@ export class FileMatcher extends EventEmitter {
      * Makes the conversion of the FilterPredicates Enum to the corresponding operation and
      * checks if the file is ok.
      *
-     * @param {any} value - value to be verified
+     * @param {number} value - value to be verified
      * @param {@link FilterPredicate} - predicate.
      *
      * @return {boolean} indicates if the file matches or not the Filters.
      */
-    private checkFilterPredicates(value: any, predicate: FilterPredicate): boolean {
+    private checkFilterPredicates(value: number, predicate: FilterPredicate): boolean {
         let matchFilter: boolean = false;
 
         switch (predicate.operator) {

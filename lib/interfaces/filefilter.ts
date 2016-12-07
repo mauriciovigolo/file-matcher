@@ -22,17 +22,13 @@ export interface FileFilter {
      */
     pattern?: string | Array<string>;
     /**
-     * File size as {@link FilterPredicate}
+     * File size in bytes as {@link FilterPredicate}
      */
     size?: FilterPredicate;
     /**
-     * File access time as {@link FilterPredicate}
-     */
-    accessTime?: FilterPredicate;
-    /**
      * File change time as {@link FilterPredicate}
      */
-    changeTime?: FilterPredicate;
+    modifiedTime?: FilterPredicate;
     /**
      * File birth time as {@link FilterPredicate}
      */

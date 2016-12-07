@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
-        "outDir": "build/file-finder",
+        "outDir": "build/file-matcher",
         "moduleResolution": "node",
         "rootDir": ".",
         "sourceMap": false,
