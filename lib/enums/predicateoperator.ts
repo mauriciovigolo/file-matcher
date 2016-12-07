@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://github.com/mauriciovigolo/file-matcher/LICENSE
  */
 
-
+/**
+ * @description
+ * Enum to list the predicate operators available, to be used in the
+ * {@link FilterPredicate}.
+ */
 export enum PredicateOperator {
     Equal,
     NotEqual,

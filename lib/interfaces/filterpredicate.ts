@@ -8,7 +8,8 @@
 import { PredicateOperator } from '../enums/predicateoperator';
 
 /**
- * Declares the interface to define the predicate.
+ * @description
+ * Declares the interface to define the predicate for the file search.
  */
 export interface FilterPredicate {
     /**

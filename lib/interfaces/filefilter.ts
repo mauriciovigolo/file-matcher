@@ -9,6 +9,7 @@
 import { FilterPredicate } from './filterpredicate';
 
 /**
+ * @description
  * Declares the interface to configure the available
  * filters for the file search.
  */
