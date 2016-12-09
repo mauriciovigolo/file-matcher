@@ -134,7 +134,7 @@ export class FileMatcher extends EventEmitter {
         let fileGlob = this.filters.pattern;
 
         if (fileGlob) {
-            if (fileGlob.length && fileGlob.length > 0) {
+            if (typeof fileGlob !== 'string') {
                 fileGlob = fileGlob as Array<string>;
 
                 fileGlob.forEach((item, index) => {
@@ -211,7 +211,7 @@ export class FileMatcher extends EventEmitter {
      *
      * @param {string} dir - directory to be searched.
      */
-    private readDirectory(dir: string): Promise<void> {
+    private readDirectory(dir: string): Promise<any> {
         let self = this;
 
         return new Promise((resolve, reject) => {
