@@ -33,6 +33,25 @@ describe('FileMatcher Tests', function () {
     });
 
     /*
+     * Search without glob array
+     */
+    it('Should return the .txt file only', (done) => {
+        finder.find({
+            path: appPath,
+            filters: {
+                pattern: '**/*.txt'
+            },
+            recursiveSearch: true
+        }).then(files => {
+            expect(files.length).toBeGreaterThan(0);
+            done();
+        }).catch(err => {
+            console.log('Error: ', err);
+            done();
+        });
+    });
+
+    /*
      * Search by filename and file content
      */
     it('Should filter .txt files and content choosealicense.com', (done) => {
