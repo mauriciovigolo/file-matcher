@@ -17,6 +17,7 @@ import { FileFilter } from './interfaces/filefilter';
 import { ProcessingDir } from './interfaces/processingdir';
 import { FilterPredicate } from './interfaces/filterpredicate';
 import { PredicateOperator } from './enums/predicateoperator';
+import { ReadFileOptions } from './interfaces/readfileoptions';
 
 /**
  * @whatItDoes Finds file(s) by name / contents, according to the {@link FindOptions} criteria.
@@ -64,6 +65,7 @@ export class FileMatcher extends EventEmitter {
     private filters: FileFilter;
     private contentFilter: RegExp;
     private recursiveSearch: boolean;
+    private readFileOptions: ReadFileOptions;
     private negationFilter: string[];
     private files: string[];
     private processing: ProcessingDir[];
@@ -102,6 +104,11 @@ export class FileMatcher extends EventEmitter {
         this.init(criteria);
 
         return new Promise((resolve, reject) => {
+            if (!this.contentFilter && !this.filters) {
+                reject('At least a filter or content regex filter should be declared!');
+                return;
+            }
+
             async.waterfall([
                 callback => this.filterFiles(criteria.path, callback),
                 callback => this.filterFileContent(callback)
@@ -123,29 +130,31 @@ export class FileMatcher extends EventEmitter {
      */
     private init(criteria: FindOptions) {
         this.filters = criteria.filters;
-        this.contentFilter = criteria.fileContent;
+        this.contentFilter = criteria.content;
+        this.readFileOptions = criteria.fileReadOptions || { encoding: 'utf8', flag: 'r'};
+
         this.files = [];
         this.processing = [];
-
         this.recursiveSearch = criteria.recursiveSearch || false;
-
         this.negationFilter = ['**/**'];
 
-        let fileGlob = this.filters.pattern;
+        if (this.filters) {
+            let fileGlob = this.filters.pattern;
 
-        if (fileGlob) {
-            if (typeof fileGlob !== 'string') {
-                fileGlob = fileGlob as Array<string>;
+            if (fileGlob) {
+                if (typeof fileGlob !== 'string') {
+                    fileGlob = fileGlob as Array<string>;
 
-                fileGlob.forEach((item, index) => {
-                    if (item.indexOf('!') === 0) {
-                        this.negationFilter.push(item);
+                    fileGlob.forEach((item, index) => {
+                        if (item.indexOf('!') === 0) {
+                            this.negationFilter.push(item);
+                        }
+                    });
+                } else {
+                    if (fileGlob.indexOf('!') === 0) {
+                        fileGlob = fileGlob as string;
+                        this.negationFilter.push(fileGlob);
                     }
-                });
-            } else {
-                if (fileGlob.indexOf('!') === 0) {
-                    fileGlob = fileGlob as string;
-                    this.negationFilter.push(fileGlob);
                 }
             }
         }
@@ -185,7 +194,7 @@ export class FileMatcher extends EventEmitter {
         let matchingFiles: Array<string> = [];
 
         if (this.contentFilter && this.files && this.files.length) {
-            this.files.forEach((file, index) => {
+            this.files.some((file, index) => {
                 this.readFileContent(file)
                     .then((result) => {
                         if (result) {
@@ -194,10 +203,13 @@ export class FileMatcher extends EventEmitter {
 
                         if ((self.files.length - 1) === index) {
                             callback(null, matchingFiles);
+                            return true;
                         }
                     }).catch(err => {
                         callback(err);
+                        return true;
                     });
+                    return false;
             });
         } else {
             matchingFiles = this.files;
@@ -254,10 +266,6 @@ export class FileMatcher extends EventEmitter {
      */
     private checkAndApplyFilters(dir: string, item: string, resolve: Function, reject: Function, totalItensDir: number, indexItem: number) {
         fs.stat(item, (err, stats) => {
-            if (err) {
-                reject(err);
-            }
-
             if (stats.isDirectory()) {
                 // Should search recursively?
                 if (this.recursiveSearch) {
@@ -301,6 +309,10 @@ export class FileMatcher extends EventEmitter {
      */
     private matchFilters(file: string, stats: fs.Stats): boolean {
         let matchFilter: boolean = true;
+
+        if (!this.filters) {
+            return matchFilter;
+        }
 
         // Check filename pattern
         if (this.filters.pattern) {
@@ -365,16 +377,16 @@ export class FileMatcher extends EventEmitter {
 
         switch (predicate.operator) {
             case PredicateOperator.GreaterThan:
-                matchFilter = value > predicate.value || value === predicate.value;
+                matchFilter = value > predicate.value;
                 break;
             case PredicateOperator.LessThan:
-                matchFilter = value < predicate.value || value === predicate.value;
+                matchFilter = value < predicate.value;
                 break;
             case PredicateOperator.Equal:
-                matchFilter = value !== predicate.value;
+                matchFilter = value === predicate.value;
                 break;
             case PredicateOperator.NotEqual:
-                matchFilter = value === predicate.value;
+                matchFilter = value !== predicate.value;
                 break;
         }
 
@@ -397,12 +409,6 @@ export class FileMatcher extends EventEmitter {
 
             this.emit('endSearchSubDirectory', parentDir, subDir.parentResolve);
         } else {
-            let idxDir = this.processing.findIndex(processingItem => processingItem.dir === dir);
-
-            if (idxDir > -1) {
-                this.processing.splice(idxDir, 1);
-            }
-
             this.emit('endSearchDirectory', dir);
         }
 
@@ -420,7 +426,7 @@ export class FileMatcher extends EventEmitter {
         let self = this;
 
         return new Promise((resolve, reject) => {
-            fs.readFile(file, 'utf-8', (err, data) => {
+            fs.readFile(file, this.readFileOptions, (err, data) => {
                 if (err) {
                     reject(err);
                     return;

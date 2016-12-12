@@ -7,6 +7,7 @@
  */
 
 import { FileFilter } from './filefilter';
+import { ReadFileOptions } from './readfileoptions';
 
 /**
  * @description
@@ -21,14 +22,18 @@ export interface FindOptions {
     /**
      * Filters as described in {@link FileFilter}
      */
-    filters: FileFilter;
+    filters?: FileFilter;
     /**
      * RegExp to match the contents os a file.
      * This field is optional and if informed will apply to the file contents.
      * So watch your regex to avoid performance issues if you have a big amount
      * of files.
      */
-    fileContent?: RegExp;
+    content?: RegExp;
+    /**
+     *
+     */
+    fileReadOptions?: ReadFileOptions;
     /**
      * Recursive search or not? The default is not false.
      */
