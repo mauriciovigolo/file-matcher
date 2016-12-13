@@ -142,7 +142,7 @@ export class FileMatcher extends EventEmitter {
     private init(criteria: FindOptions) {
         this.path = criteria.path;
 
-        if (this.path === '') {
+        if (this.path && this.path.trim() === '') {
             this.path = undefined;
         }
 
@@ -307,24 +307,25 @@ export class FileMatcher extends EventEmitter {
         // Check file attributes as size, birth and modified date.
         if (matchFilter && attributeFilters) {
             attributeFilters.some(attributeFilter => {
-                let predicate: FilterPredicate;
                 let valueToCompared: number | string;
 
-                predicate = attributeFilter.predicate;
+                let predicate: FilterPredicate = {
+                    operator: attributeFilter.predicate.operator,
+                    value: undefined
+                };
 
                 switch (attributeFilter.type) {
                     case AttributeType.Size:
                         valueToCompared = stats.size;
+                        predicate.value = attributeFilter.predicate.value;
                         break;
                     case AttributeType.BirthDate:
                         valueToCompared = stats.birthtime.getTime();
-                        predicate.value = (predicate.value as Date).getTime();                   
+                        predicate.value = (attributeFilter.predicate.value as Date).getTime();
                         break;
                     case AttributeType.ModifiedDate:
                         valueToCompared = stats.mtime.getTime();
-                        predicate.value = (predicate.value as Date).getTime();
-                        break;
-                    default:
+                        predicate.value = (attributeFilter.predicate.value as Date).getTime();
                         break;
                 }
 
@@ -450,7 +451,7 @@ export class FileMatcher extends EventEmitter {
     }
 
     /**
-     * 
+     *
      */
     private registerEventListeners(): void {
         this.on('endSearchSubDirectory', (parentDir, resolve) => {

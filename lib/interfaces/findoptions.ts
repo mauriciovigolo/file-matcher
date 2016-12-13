@@ -20,9 +20,9 @@ export interface FindOptions {
      */
     path: string;
     /**
-     * 
+     *
      */
-    fileFilter: FileFilter; 
+    fileFilter: FileFilter;
     /**
      * Recursive search or not? The default is not false.
      */

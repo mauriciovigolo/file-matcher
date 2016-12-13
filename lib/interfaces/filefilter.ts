@@ -23,7 +23,7 @@ export interface FileFilter {
      */
     fileNamePattern?: string | Array<string>;
     /**
-     * 
+     *
      */
     attributeFilters?: Array<AttributeFilter>;
     /**
@@ -36,5 +36,5 @@ export interface FileFilter {
     /**
      * These options will be used in the Node.JS `fs.ReadFile` function. So it has the same options as the original.
      */
-    fileReadOptions?: ReadFileOptions; 
+    fileReadOptions?: ReadFileOptions;
 }
