@@ -12,7 +12,11 @@ import { ReadFileOptions } from './readfileoptions';
 /**
  * @description
  * Declares the interface to configure the available
- * filters for the file search.
+ * filters for the file search, including file attributes, file name
+ * and file content.
+ *
+ * As it's possible to use multiple filters, it's important to know that
+ * the conjunction operator in the FileFilter is always AND.
  */
 export interface FileFilter {
     /**
@@ -23,7 +27,10 @@ export interface FileFilter {
      */
     fileNamePattern?: string | Array<string>;
     /**
-     *
+     * List of file attribute filters as file size,
+     * modified and birth dates. It's possible to send the same attribute more
+     * than one time, to checking, for example, if a file size is GreaterThan and
+     * LessThan a specific value.
      */
     attributeFilters?: Array<AttributeFilter>;
     /**
@@ -34,7 +41,8 @@ export interface FileFilter {
      */
     content?: RegExp;
     /**
-     * These options will be used in the Node.JS `fs.ReadFile` function. So it has the same options as the original.
+     * These options will be used in the Node.JS `fs.ReadFile` function.
+     * The @see {@link ReadFileOptions} has the same options as the original.
      */
     fileReadOptions?: ReadFileOptions;
 }

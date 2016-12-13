@@ -8,8 +8,8 @@
 
 /**
  * @description
- * Enum to list the predicate operators available, to be used in the
- * {@link FilterPredicate}.
+ * List of available file attribute types, that will be used to determine the
+ * filtering execution flow.
  */
 export enum AttributeType {
     /**

@@ -6,12 +6,26 @@
  * found in the LICENSE file at https://github.com/mauriciovigolo/file-matcher/LICENSE
  */
 import { AttributeType } from '../enums/attributetype';
-import { FilterPredicate } from './filterpredicate';
+import { PredicateOperator } from '../enums/predicateoperator';
 
-
+/**
+ * @description
+ * Declares a generic interface for filtering files by attributes.
+ */
 export interface AttributeFilter {
-
-    predicate: FilterPredicate;
+    /**
+     * Attribute type, which will determine the execution flow. Examples:
+     * Size, Modified Date and Birth Date.
+     * @see {@link AttributeType}
+     */
     type: AttributeType;
-
+    /**
+     * Value to be searched, can be a number, Date or string.
+     */
+    value: number | Date | string;
+    /**
+     * Operator to be applied to the value, ie.:
+     * Equal, LessThan,.. as defined in @see {@link PredicateOperator}.
+     */
+    operator: PredicateOperator;
 }
