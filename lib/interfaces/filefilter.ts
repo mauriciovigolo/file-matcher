@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://github.com/mauriciovigolo/file-matcher/LICENSE
  */
 
-import { FilterPredicate } from './filterpredicate';
+import { AttributeFilter } from './attributefilter';
+import { ReadFileOptions } from './readfileoptions';
 
 /**
  * @description
@@ -20,17 +21,20 @@ export interface FileFilter {
      * '*.js'
      * ['**','!*.ts']
      */
-    pattern?: string | Array<string>;
+    fileNamePattern?: string | Array<string>;
     /**
-     * File size in bytes as {@link FilterPredicate}
+     * 
      */
-    size?: FilterPredicate;
+    attributeFilters?: Array<AttributeFilter>;
     /**
-     * File change time as {@link FilterPredicate}
+     * RegExp to match the contents os a file.
+     * This field is optional and if informed will apply to the file contents.
+     * So watch your regex to avoid performance issues if you have a big amount
+     * of files.
      */
-    modifiedTime?: FilterPredicate;
+    content?: RegExp;
     /**
-     * File birth time as {@link FilterPredicate}
+     * These options will be used in the Node.JS `fs.ReadFile` function. So it has the same options as the original.
      */
-    birthTime?: FilterPredicate;
+    fileReadOptions?: ReadFileOptions; 
 }

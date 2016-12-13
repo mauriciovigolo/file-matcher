@@ -12,11 +12,12 @@ import * as fs from 'fs';
 import * as mm from 'micromatch';
 import * as path from 'path';
 
+import { AttributeType } from './enums/attributetype';
+import { PredicateOperator } from './enums/predicateoperator';
 import { FindOptions } from './interfaces/findoptions';
 import { FileFilter } from './interfaces/filefilter';
-import { ProcessingDir } from './interfaces/processingdir';
 import { FilterPredicate } from './interfaces/filterpredicate';
-import { PredicateOperator } from './enums/predicateoperator';
+import { ProcessingDir } from './interfaces/processingdir';
 import { ReadFileOptions } from './interfaces/readfileoptions';
 
 /**
@@ -62,17 +63,21 @@ import { ReadFileOptions } from './interfaces/readfileoptions';
  */
 export class FileMatcher extends EventEmitter {
 
-    private filters: FileFilter;
-    private contentFilter: RegExp;
+    private path: string;
+    private fileFilter: FileFilter;
     private recursiveSearch: boolean;
-    private readFileOptions: ReadFileOptions;
     private negationFilter: string[];
     private files: string[];
     private processing: ProcessingDir[];
 
     constructor() {
         super();
+
+        this.files = [];
+        this.processing = [];
         this.setMaxListeners(0);
+
+        this.registerEventListeners();
     }
 
     /**
@@ -104,13 +109,19 @@ export class FileMatcher extends EventEmitter {
         this.init(criteria);
 
         return new Promise((resolve, reject) => {
-            if (!this.contentFilter && !this.filters) {
-                reject('At least a filter or content regex filter should be declared!');
+            if (!this.path) {
+                reject('The path must be informed to execute the file search!');
+                return;
+            }
+
+            if (!this.fileFilter.fileNamePattern && !this.fileFilter.attributeFilters
+                && !this.fileFilter.content) {
+                reject('At least a filename pattern, fileattribute or file content regex should be declared!');
                 return;
             }
 
             async.waterfall([
-                callback => this.filterFiles(criteria.path, callback),
+                callback => this.filterFiles(callback),
                 callback => this.filterFileContent(callback)
             ], (err, files) => {
                 if (err) {
@@ -129,23 +140,36 @@ export class FileMatcher extends EventEmitter {
      * @param {FindOptions} - criteria.
      */
     private init(criteria: FindOptions) {
-        this.filters = criteria.filters;
-        this.contentFilter = criteria.content;
-        this.readFileOptions = criteria.fileReadOptions || { encoding: 'utf8', flag: 'r'};
+        this.path = criteria.path;
+
+        if (this.path === '') {
+            this.path = undefined;
+        }
+
+        this.fileFilter = criteria.fileFilter;
+
+        if (this.fileFilter.content) {
+            this.fileFilter.fileReadOptions = this.fileFilter.fileReadOptions || { encoding: 'utf8', flag: 'r' };
+        }
+
+        if (this.fileFilter.attributeFilters && this.fileFilter.attributeFilters.length === 0) {
+            this.fileFilter.attributeFilters = undefined;
+        }
+
+        this.recursiveSearch = criteria.recursiveSearch || false;
 
         this.files = [];
         this.processing = [];
-        this.recursiveSearch = criteria.recursiveSearch || false;
         this.negationFilter = ['**/**'];
 
-        if (this.filters) {
-            let fileGlob = this.filters.pattern;
+        if (this.fileFilter.fileNamePattern) {
+            let fileGlob = this.fileFilter.fileNamePattern;
 
             if (fileGlob) {
                 if (typeof fileGlob !== 'string') {
                     fileGlob = fileGlob as Array<string>;
 
-                    fileGlob.forEach((item, index) => {
+                    fileGlob.forEach((item) => {
                         if (item.indexOf('!') === 0) {
                             this.negationFilter.push(item);
                         }
@@ -158,63 +182,22 @@ export class FileMatcher extends EventEmitter {
                 }
             }
         }
-
-        this.on('endSearchSubDirectory', (parentDir, resolve) => {
-            let stillProcessingSubdir = this.processing.findIndex(processingItem => processingItem.parentDir === parentDir) > -1;
-
-            if (!stillProcessingSubdir) {
-                this.endFileSearch(parentDir, resolve);
-            }
-        });
     }
 
     /**
-     * Filter the files, reading the directory and applying the filters.
+     * Filter the files, reading the directory and applying the filename pattern and
+     * file attribute filters.
      *
-     * @param {string} dir - directory to be searched.
      * @param {any} callback - async's callback.
      */
-    private filterFiles(dir: string, callback: any) {
-        this.readDirectory(dir)
+    private filterFiles(callback: any) {
+        this.readDirectory(this.path)
             .then(() => {
                 callback();
             })
             .catch((err) => {
                 callback(err);
             });
-    }
-
-    /**
-     * Filter files by content.
-     *
-     * @param {any} callback - async's callback.
-     */
-    private filterFileContent(callback: any) {
-        let self = this;
-        let matchingFiles: Array<string> = [];
-
-        if (this.contentFilter && this.files && this.files.length) {
-            this.files.some((file, index) => {
-                this.readFileContent(file)
-                    .then((result) => {
-                        if (result) {
-                            matchingFiles.push(result);
-                        }
-
-                        if ((self.files.length - 1) === index) {
-                            callback(null, matchingFiles);
-                            return true;
-                        }
-                    }).catch(err => {
-                        callback(err);
-                        return true;
-                    });
-                    return false;
-            });
-        } else {
-            matchingFiles = this.files;
-            callback(null, matchingFiles);
-        }
     }
 
     /**
@@ -246,7 +229,6 @@ export class FileMatcher extends EventEmitter {
 
                 list.forEach(function (item, index) {
                     item = path.resolve(dir, item);
-
                     self.checkAndApplyFilters(dir, item, resolve, reject, totalItensList, index);
                 });
             });
@@ -310,69 +292,61 @@ export class FileMatcher extends EventEmitter {
     private matchFilters(file: string, stats: fs.Stats): boolean {
         let matchFilter: boolean = true;
 
-        if (!this.filters) {
+        let fileNamePattern = this.fileFilter.fileNamePattern;
+        let attributeFilters = this.fileFilter.attributeFilters;
+
+        if (!fileNamePattern && !attributeFilters) {
             return matchFilter;
         }
 
         // Check filename pattern
-        if (this.filters.pattern) {
-            matchFilter = mm(file, this.filters.pattern).length > 0;
-            if (!matchFilter) {
-                return false;
-            }
+        if (fileNamePattern) {
+            matchFilter = mm(file, fileNamePattern).length > 0;
         }
 
-        // Check file size
-        if (this.filters.size) {
-            matchFilter = this.checkFilterPredicates(stats.size, this.filters.size);
-            if (!matchFilter) {
-                return false;
-            }
+        // Check file attributes as size, birth and modified date.
+        if (matchFilter && attributeFilters) {
+            attributeFilters.some(attributeFilter => {
+                let predicate: FilterPredicate;
+                let valueToCompared: number | string;
+
+                predicate = attributeFilter.predicate;
+
+                switch (attributeFilter.type) {
+                    case AttributeType.Size:
+                        valueToCompared = stats.size;
+                        break;
+                    case AttributeType.BirthDate:
+                        valueToCompared = stats.birthtime.getTime();
+                        predicate.value = (predicate.value as Date).getTime();                   
+                        break;
+                    case AttributeType.ModifiedDate:
+                        valueToCompared = stats.mtime.getTime();
+                        predicate.value = (predicate.value as Date).getTime();
+                        break;
+                    default:
+                        break;
+                }
+
+                matchFilter = this.checkFilterPredicates(valueToCompared, predicate);
+
+                return !matchFilter;
+            });
         }
 
-        // Filter by file creation time
-        if (this.filters.birthTime) {
-            let birthTime = (this.filters.birthTime.value as Date).getTime();
-
-            let filterPredicate: FilterPredicate = {
-                operator: this.filters.birthTime.operator,
-                value: birthTime
-            };
-
-            matchFilter = this.checkFilterPredicates(stats.birthtime.getTime(), filterPredicate);
-            if (!matchFilter) {
-                return false;
-            }
-        }
-
-        // Filter by file change time
-        if (this.filters.modifiedTime) {
-            let modifiedTime = (this.filters.modifiedTime.value as Date).getTime();
-
-            let filterPredicate: FilterPredicate = {
-                operator: this.filters.modifiedTime.operator,
-                value: modifiedTime
-            };
-
-            matchFilter = this.checkFilterPredicates(stats.mtime.getTime(), filterPredicate);
-            if (!matchFilter) {
-                return false;
-            }
-        }
-
-        return true;
+        return matchFilter;
     }
 
     /**
      * Makes the conversion of the FilterPredicates Enum to the corresponding operation and
      * checks if the file is ok.
      *
-     * @param {number} value - value to be verified
+     * @param {number | string} value - value to be verified
      * @param {@link FilterPredicate} - predicate.
      *
      * @return {boolean} indicates if the file matches or not the Filters.
      */
-    private checkFilterPredicates(value: number, predicate: FilterPredicate): boolean {
+    private checkFilterPredicates(value: number | string, predicate: FilterPredicate): boolean {
         let matchFilter: boolean = false;
 
         switch (predicate.operator) {
@@ -416,6 +390,39 @@ export class FileMatcher extends EventEmitter {
     }
 
     /**
+     * Filter files by content.
+     *
+     * @param {any} callback - async's callback.
+     */
+    private filterFileContent(callback: any) {
+        let self = this;
+        let matchingFiles: Array<string> = [];
+
+        if (this.fileFilter.content && this.files && this.files.length > 0) {
+            this.files.some((file, index) => {
+                this.readFileContent(file)
+                    .then((result) => {
+                        if (result) {
+                            matchingFiles.push(result);
+                        }
+
+                        if ((self.files.length - 1) === index) {
+                            callback(null, matchingFiles);
+                            return true;
+                        }
+                    }).catch(err => {
+                        callback(err);
+                        return true;
+                    });
+                return false;
+            });
+        } else {
+            matchingFiles = this.files;
+            callback(null, matchingFiles);
+        }
+    }
+
+    /**
      * It does the file read and applies the content RegExp.
      *
      * @param {string} file - file name to be loaded and it's content verified.
@@ -426,19 +433,32 @@ export class FileMatcher extends EventEmitter {
         let self = this;
 
         return new Promise((resolve, reject) => {
-            fs.readFile(file, this.readFileOptions, (err, data) => {
+            fs.readFile(file, this.fileFilter.fileReadOptions, (err, data) => {
                 if (err) {
                     reject(err);
                     return;
                 }
 
-                if (this.contentFilter.test(data)) {
+                if (this.fileFilter.content.test(data)) {
                     self.emit('contentMatch', file);
                     resolve(file);
                 } else {
                     resolve();
                 }
             });
+        });
+    }
+
+    /**
+     * 
+     */
+    private registerEventListeners(): void {
+        this.on('endSearchSubDirectory', (parentDir, resolve) => {
+            let stillProcessingSubdir = this.processing.findIndex(processingItem => processingItem.parentDir === parentDir) > -1;
+
+            if (!stillProcessingSubdir) {
+                this.endFileSearch(parentDir, resolve);
+            }
         });
     }
 

@@ -7,7 +7,7 @@
  */
 
 import { FileFilter } from './filefilter';
-import { ReadFileOptions } from './readfileoptions';
+
 
 /**
  * @description
@@ -20,20 +20,9 @@ export interface FindOptions {
      */
     path: string;
     /**
-     * Filters as described in {@link FileFilter}
+     * 
      */
-    filters?: FileFilter;
-    /**
-     * RegExp to match the contents os a file.
-     * This field is optional and if informed will apply to the file contents.
-     * So watch your regex to avoid performance issues if you have a big amount
-     * of files.
-     */
-    content?: RegExp;
-    /**
-     * These options will be used in the Node.JS `fs.ReadFile` function. So it has the same options as the original.
-     */
-    fileReadOptions?: ReadFileOptions;
+    fileFilter: FileFilter; 
     /**
      * Recursive search or not? The default is not false.
      */

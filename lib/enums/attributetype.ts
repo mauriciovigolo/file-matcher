@@ -12,8 +12,16 @@
  * {@link FilterPredicate}.
  */
 export enum AttributeType {
-    FileName,
+    /**
+     * File size in bytes.
+     */
     Size,
+    /**
+     * File birth time.
+     */
     BirthDate,
+    /**
+     * File change time
+     */
     ModifiedDate
 }

@@ -47,7 +47,7 @@ as the source already bundles it's d.ts files.
 
 
 # Usage
-
+ 
 The find function of filematcher provides the following search options:
 
 * `path` -  Path to be searched. ie: './lib/'
