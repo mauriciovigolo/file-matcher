@@ -101,10 +101,8 @@ describe('FileMatcher Tests', function () {
                 attributeFilters: [
                     {
                         type: AttributeType.BirthDate,
-                        predicate: {
-                            value: new Date(1900, 0, 1),
-                            operator: PredicateOperator.LessThan
-                        }
+                        value: new Date(1900, 0, 1),
+                        operator: PredicateOperator.LessThan
                     }
                 ]
             },
@@ -128,10 +126,8 @@ describe('FileMatcher Tests', function () {
                 attributeFilters: [
                     {
                         type: AttributeType.ModifiedDate,
-                        predicate: {
-                            value: new Date(1900, 0, 1),
-                            operator: PredicateOperator.LessThan
-                        }
+                        value: new Date(1900, 0, 1),
+                        operator: PredicateOperator.LessThan
                     }
                 ]
             },
@@ -156,10 +152,8 @@ describe('FileMatcher Tests', function () {
                 attributeFilters: [
                     {
                         type: AttributeType.Size,
-                        predicate: {
-                            value: 0,
-                            operator: PredicateOperator.Equal
-                        }
+                        value: 0,
+                        operator: PredicateOperator.Equal
                     }
                 ]
             },
@@ -184,10 +178,8 @@ describe('FileMatcher Tests', function () {
                 attributeFilters: [
                     {
                         type: AttributeType.Size,
-                        predicate: {
-                            value: 0,
-                            operator: PredicateOperator.NotEqual
-                        }
+                        value: 0,
+                        operator: PredicateOperator.NotEqual
                     }
                 ]
             },
@@ -344,10 +336,8 @@ describe('FileMatcher Tests', function () {
                 attributeFilters: [
                     {
                         type: AttributeType.Size,
-                        predicate: {
-                            value: 10,
-                            operator: PredicateOperator.GreaterThan
-                        }
+                        value: 10,
+                        operator: PredicateOperator.GreaterThan
                     }
                 ]
             },
@@ -373,10 +363,8 @@ describe('FileMatcher Tests', function () {
                 attributeFilters: [
                     {
                         type: AttributeType.Size,
-                        predicate: {
-                            value: 10,
-                            operator: PredicateOperator.GreaterThan
-                        }
+                        value: 10,
+                        operator: PredicateOperator.GreaterThan
                     }
                 ]
             },

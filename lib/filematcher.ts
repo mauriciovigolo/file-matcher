@@ -12,11 +12,11 @@ import * as fs from 'fs';
 import * as mm from 'micromatch';
 import * as path from 'path';
 
+import { AttributeFilter } from './interfaces/attributefilter';
 import { AttributeType } from './enums/attributetype';
 import { PredicateOperator } from './enums/predicateoperator';
 import { FindOptions } from './interfaces/findoptions';
 import { FileFilter } from './interfaces/filefilter';
-import { FilterPredicate } from './interfaces/filterpredicate';
 import { ProcessingDir } from './interfaces/processingdir';
 import { ReadFileOptions } from './interfaces/readfileoptions';
 
@@ -307,29 +307,28 @@ export class FileMatcher extends EventEmitter {
         // Check file attributes as size, birth and modified date.
         if (matchFilter && attributeFilters) {
             attributeFilters.some(attributeFilter => {
-                let valueToCompared: number | string;
+                let valueStat: number | string;
+                let valueFilter: number | string;
+                let operatorFilter: PredicateOperator;
 
-                let predicate: FilterPredicate = {
-                    operator: attributeFilter.predicate.operator,
-                    value: undefined
-                };
+                operatorFilter = attributeFilter.operator;
 
                 switch (attributeFilter.type) {
                     case AttributeType.Size:
-                        valueToCompared = stats.size;
-                        predicate.value = attributeFilter.predicate.value;
+                        valueStat = stats.size;
+                        valueFilter = attributeFilter.value as number;
                         break;
                     case AttributeType.BirthDate:
-                        valueToCompared = stats.birthtime.getTime();
-                        predicate.value = (attributeFilter.predicate.value as Date).getTime();
+                        valueStat = stats.birthtime.getTime();
+                        valueFilter = (attributeFilter.value as Date).getTime();
                         break;
                     case AttributeType.ModifiedDate:
-                        valueToCompared = stats.mtime.getTime();
-                        predicate.value = (attributeFilter.predicate.value as Date).getTime();
+                        valueStat = stats.mtime.getTime();
+                        valueFilter = (attributeFilter.value as Date).getTime();
                         break;
                 }
 
-                matchFilter = this.checkFilterPredicates(valueToCompared, predicate);
+                matchFilter = this.checkFilterPredicates(valueStat, valueFilter, operatorFilter);
 
                 return !matchFilter;
             });
@@ -342,26 +341,27 @@ export class FileMatcher extends EventEmitter {
      * Makes the conversion of the FilterPredicates Enum to the corresponding operation and
      * checks if the file is ok.
      *
-     * @param {number | string} value - value to be verified
-     * @param {@link FilterPredicate} - predicate.
+     * @param {number | string} valueStat - file attribute value from stat.
+     * @param {number | string} valueFilter - value from @see {@link AttributeFilter}
+     * @param {PredicateOperator} operatorFilter - operator filter type.
      *
      * @return {boolean} indicates if the file matches or not the Filters.
      */
-    private checkFilterPredicates(value: number | string, predicate: FilterPredicate): boolean {
+    private checkFilterPredicates(valueStat: number | string, valueFilter: number | string, operatorFilter: PredicateOperator): boolean {
         let matchFilter: boolean = false;
 
-        switch (predicate.operator) {
+        switch (operatorFilter) {
             case PredicateOperator.GreaterThan:
-                matchFilter = value > predicate.value;
+                matchFilter = valueStat > valueFilter;
                 break;
             case PredicateOperator.LessThan:
-                matchFilter = value < predicate.value;
+                matchFilter = valueStat < valueFilter;
                 break;
             case PredicateOperator.Equal:
-                matchFilter = value === predicate.value;
+                matchFilter = valueStat === valueFilter;
                 break;
             case PredicateOperator.NotEqual:
-                matchFilter = value !== predicate.value;
+                matchFilter = valueStat !== valueFilter;
                 break;
         }
 
@@ -434,13 +434,13 @@ export class FileMatcher extends EventEmitter {
         let self = this;
 
         return new Promise((resolve, reject) => {
-            fs.readFile(file, this.fileFilter.fileReadOptions, (err, data) => {
+            fs.readFile(file, self.fileFilter.fileReadOptions, (err, data) => {
                 if (err) {
                     reject(err);
                     return;
                 }
 
-                if (this.fileFilter.content.test(data)) {
+                if (self.fileFilter.content.test(data)) {
                     self.emit('contentMatch', file);
                     resolve(file);
                 } else {
@@ -451,7 +451,7 @@ export class FileMatcher extends EventEmitter {
     }
 
     /**
-     *
+     * Register all event listeners, done internally by this library.
      */
     private registerEventListeners(): void {
         this.on('endSearchSubDirectory', (parentDir, resolve) => {
