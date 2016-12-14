@@ -13,6 +13,13 @@
  * - flag can be r - read and w - write
  */
 export interface ReadFileOptions {
+    /**
+     * Encoding options to open the file. The default value is utf8.
+     */
     encoding: 'ascii' | 'base64' | 'binary' | 'hex' | 'ucs2' | 'ucs-2' | 'utf16le' | 'utf-16le' | 'utf8' | 'utf-8';
+    /**
+     * Flag indicating the file opening mode - r: read and w: write. default
+     * value is 'r'.
+     */
     flag: 'r' | 'w';
 }

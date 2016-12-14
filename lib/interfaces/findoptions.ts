@@ -20,11 +20,14 @@ export interface FindOptions {
      */
     path: string;
     /**
+     * Filters to be applied to the file search, as file attributes, filename
+     * patterns using globs and file content.
      *
+     * @see {@link FileFilter}
      */
     fileFilter: FileFilter;
     /**
-     * Recursive search or not? The default is not false.
+     * Recursive search? The default is false.
      */
     recursiveSearch?: boolean;
 }
