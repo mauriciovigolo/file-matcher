@@ -9,8 +9,15 @@
  * @description
  * External library exposition.
  */
-export * from './lib/filematcher';
+// Interfaces
+export * from './lib/interfaces/attributefilter';
 export * from './lib/interfaces/filefilter';
 export * from './lib/interfaces/findoptions';
-export * from './lib/interfaces/filterpredicate';
+export * from './lib/interfaces/readfileoptions';
+
+// Enums
+export * from './lib/enums/attributetype';
 export * from './lib/enums/predicateoperator';
+
+// Main lib
+export * from './lib/filematcher';
