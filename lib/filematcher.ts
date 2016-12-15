@@ -384,7 +384,12 @@ export class FileMatcher extends EventEmitter {
 
             this.emit('endSearchSubDirectory', parentDir, subDir.parentResolve);
         } else {
-            this.emit('endSearchDirectory', dir);
+            // End of file searching on the directory.
+            let totalOfFiles: number = 0;
+            if (this.files && this.files.length > 0) {
+                totalOfFiles = this.files.length;
+            }
+            this.emit('endSearchDirectory', dir, totalOfFiles);
         }
 
         resolve();
@@ -404,6 +409,8 @@ export class FileMatcher extends EventEmitter {
                 this.readFileContent(file)
                     .then((result) => {
                         if (result) {
+                            let processed: number = index / this.files.length;
+                            self.emit('contentMatch', file, processed);
                             matchingFiles.push(result);
                         }
 
@@ -441,7 +448,6 @@ export class FileMatcher extends EventEmitter {
                 }
 
                 if (self.fileFilter.content.test(data)) {
-                    self.emit('contentMatch', file);
                     resolve(file);
                 } else {
                     resolve();
