@@ -1,61 +1,59 @@
 {
-    "name": "file-matcher",
-    "version": "0.0.1",
-    "description": "Return list of files, matching by file attributes or/and contents",
-    "main": "index.js",
-    "scripts": {
-        "clean": "rm -rf ./build",
-        "tslint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**'",
-        "cp-package": "cp ./package.json ./build/file-matcher/",
-        "doc": "jsdoc -c ./jsdoc/jsDoc.json ./jsdoc/README.md",
-        "build": "npm run clean &&  npm run tslint && tsc && npm run cp-package && echo '\n===> End of Build process'",
-        "test": "npm run build && echo '\n===> Testing... ' && jasmine ./build/file-matcher/test/**/*.spec.js",
-        "coverage": "npm run build && istanbul cover jasmine ./build/file-matcher/test/**/*.spec.js",
-        "travis": "npm run build && istanbul cover node jasmine ./build/file-matcher/test --captureExceptions && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/tisatec/file-finder.git"
-    },
-    "keywords": [
-        "fs",
-        "file finder",
-        "file match",
-        "recursive",
-        "glob",
-        "walk",
-        "walker",
-        "events",
-        "promise",
-        "contents",
-        "find",
-        "directory",
-        "grep",
-        "search",
-        "sniffer",
-        "regex",
-        "typescript"
-    ],
-    "author": "mauriciovigolo@gmail.com",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/tisatec/file-finder/issues"
-    },
-    "homepage": "https://github.com/tisatec/file-finder#readme",
-    "devDependencies": {
-        "@types/async": "^2.0.33",
-        "@types/jasmine": "^2.5.38",
-        "@types/micromatch": "^2.3.29",
-        "@types/node": "^6.0.50",
-        "coveralls": "^2.11.15",
-        "istanbul": "^0.4.5",
-        "jasmine": "^2.5.2",
-        "jsdoc": "^3.4.3",
-        "tslint": "^3.10.2",
-        "typescript": "^2.1.4"
-    },
-    "dependencies": {
-        "async": "^2.1.4",
-        "micromatch": "^2.3.11"
-    }
+  "name": "file-matcher",
+  "version": "0.0.1",
+  "description": "Return list of files, matching by file attributes or/and contents",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf ./build",
+    "tslint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**'",
+    "cp-package": "cp ./package.json ./build/file-matcher/",
+    "build": "npm run clean &&  npm run tslint && tsc && npm run cp-package && echo '\n===> End of Build process'",
+    "test": "npm run build && echo '\n===> Testing... ' && jasmine ./build/file-matcher/test/**/*.spec.js",
+    "coverage": "npm run build && istanbul cover jasmine ./build/file-matcher/test/**/*.spec.js",
+    "travis": "npm run build && istanbul cover node jasmine ./build/file-matcher/test --captureExceptions && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tisatec/file-finder.git"
+  },
+  "keywords": [
+    "fs",
+    "file finder",
+    "file match",
+    "recursive",
+    "glob",
+    "walk",
+    "walker",
+    "events",
+    "promise",
+    "contents",
+    "find",
+    "directory",
+    "grep",
+    "search",
+    "sniffer",
+    "regex",
+    "typescript"
+  ],
+  "author": "mauriciovigolo@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tisatec/file-finder/issues"
+  },
+  "homepage": "https://github.com/tisatec/file-finder#readme",
+  "devDependencies": {
+    "@types/async": "^2.0.33",
+    "@types/jasmine": "^2.5.38",
+    "@types/micromatch": "^2.3.29",
+    "@types/node": "^6.0.50",
+    "coveralls": "^2.11.15",
+    "istanbul": "^0.4.5",
+    "jasmine": "^2.5.2",
+    "tslint": "^3.10.2",
+    "typescript": "^2.1.4"
+  },
+  "dependencies": {
+    "async": "^2.1.4",
+    "micromatch": "^2.3.11"
+  }
 }
