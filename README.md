@@ -19,9 +19,10 @@ file-matcher
 * [Usage](#usage)
     - [Ecmascript](#ecmascript)
     - [Typescript](#typescript)
-* [Documentation](#)
+<!-- * [Documentation](#)
     - [Examples](#)
     - [File-Matcher API](#)
+-->
 * [History](#)
 * [License](#)
 
@@ -137,6 +138,7 @@ fileMatcher.find(options)
 
 ```
 
+<!-- 
 # Documentation
 
 ## Examples
@@ -145,9 +147,9 @@ Check out the examples available in
 
 ## File-Matcher API
 
-
 # History
 For the list of all changes see the history log.
+-->
 
 
 # License

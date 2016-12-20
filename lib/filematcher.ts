@@ -21,37 +21,13 @@ import { ProcessingDir } from './interfaces/processingdir';
 import { ReadFileOptions } from './interfaces/readfileoptions';
 
 /**
- * @whatItDoes Finds file(s) by name / contents, according to the {@link FindOptions} criteria.
- *
- * @howToUse
- * ```
- * let finder: FileFinder = new FileFinder();
- *
- * const criteria: FindOptions = {
- *      path: 'pathToSearch',
- *      filters: {
- *          pattern: ['*.js'], // glob
- *          size: {
- *                  value: 1000,
- *                  operator: PredicateOperator.GreaterThan;
- *          },
- *          modifiedTime:  {
- *                  value: new Date(),
- *                  operator: PredicateOperator.LessThan;
- *          },
- *          birthTime: {
- *                  value: new Date(),
- *                  operator: PredicateOperator.LessThan;
- *          }
- *      }
- *      fileContent: 'RegExp to match the contents of a file'
- * };
- *
- * finder.find(criteria);
- * ```
- *
+ * @author Mauricio Gemelli Vigolo
+ * 
+ * @module
+ * 
  * @description
- * Finds file(s) according to the criteria - by filename (using globs), size, creation and modified time. Finally it's possible to refine
+ * Finds file(s) by name / contents, according to the @see {@link FindOptions} criteria -  by filename 
+ * (using globs) or file attribute as size, birth and modified date. Finally it's possible to refine
  * the search by using a regex to match file contents. The search can be done recursively or not.
  *
  * This class extends the Node's EventEmitter. The following events are triggered:
@@ -60,6 +36,39 @@ import { ReadFileOptions } from './interfaces/readfileoptions';
  * - endSearchSubDirectory: emitted when the search in the subdirectory ends.
  * - endSearchDirectory: emitted when the search ends. This event is emitted only once.
  * - contentMatch: emitted when the content regex is matched.
+ * 
+ * @example
+ * ``` ts
+ * let finder: FileFinder = new FileFinder();
+ *
+ * let criteria: FindOptions = {
+ *      path: 'pathToSearch',
+ *      fileFilter: {
+ *          fileNamePattern: ['*.js'], // glob
+ *          attributeFilters: [
+ *              {
+ *                  type: AttributeType.Size,
+ *                  value: 1000,
+ *                  operator: PredicateOperator.GreaterThan
+ *              }
+ *          ],
+ *          content: /test/i,
+ *          fileReadOptions: {
+ *              encoding: 'utf8' 
+ *              flag: 'r'
+ *          }
+ *      },
+ *      recursiveSearch: true
+ * };
+ *
+ * finder.find(criteria)
+ *  .then(files => {
+ *      ...
+ *  })
+ * .catch(error => {
+ *      ...
+ *  });
+ * ```
  */
 export class FileMatcher extends EventEmitter {
 
@@ -99,9 +108,10 @@ export class FileMatcher extends EventEmitter {
      * - endSearchDirectory: emitted when the search ends. This event is emitted only once. Returns the DIR.
      * - contentMatch: emitted when the content regex is matched. Returns the filename.
      *
-     * @param {@link FindOptions} - criteria
+     * @param {FindOptions} - [criteria]
      *
-     * @return {Promise} returns a promise to send the results of the find execution.
+     * @return {Promise} 
+     * returns a promise with the results of the find execution.
      */
     find(criteria: FindOptions): Promise<string[]> {
         let files: Array<string> = [];
