@@ -3,9 +3,6 @@
     "version": "1.0.0",
     "description": "Basic file search using file-matcher - Ecmascript version",
     "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/tisatec/file-matcher.git"
@@ -13,9 +10,7 @@
     "keywords": [
         "Basic",
         "search",
-        "using",
         "file-matcher",
-        "-",
         "Ecmascript"
     ],
     "author": "Mauricio Gemelli Vigolo",
