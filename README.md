@@ -19,10 +19,7 @@ file-matcher
 * [Usage](#usage)
     - [Ecmascript](#ecmascript)
     - [Typescript](#typescript)
-<!-- * [Documentation](#)
-    - [Examples](#)
-    - [File-Matcher API](#)
--->
+    - [Examples](#examples)
 * [History](#)
 * [License](#)
 
@@ -54,7 +51,7 @@ The find function of filematcher provides the following search options:
 * `path` -  Path to be searched. ie: './lib/'
 * `fileFilter` -  options for filtering files, as:
     - `fileNamePattern` - Glob pattern for looking for files - filenames. Example: ```js ['**/*.js'] ```
-    - `attributeFilters` - Filter by file attributes like size, birth and modification dates. Example: ```js [{ type: AttributeType.Size, value: 10, operator: PredicateOperator.GreaterThan }] ```
+    - `attributeFilters` - Array of filters - filter by file attributes like size, birth and modification dates. Example: ```js [{ type: AttributeType.Size, value: 10, operator: PredicateOperator.GreaterThan }] ```
     - `content` - RegExp to validade file content, ie: ```js /test/i ```
     - `fileReadOptions` - These options will be used in the Node.JS `fs.ReadFile` function. So it has the same options as the original. Example: ```js { encoding:'utf8', flag: 'r' }```
 * `recursiveSearch` - Tells the finder to search recursively from the given path. This is a boolean attribute, and the default value is false.
@@ -69,7 +66,7 @@ modified between 2016-12-23 and 2016-12-25, and the file content must have "use 
 
 ``` js
 
-var FileMatcher = require('file-matcher');
+var fm = require('file-matcher');
 
 var options = {
     path: '/home/user/prjs/'
@@ -89,7 +86,7 @@ var options = {
     content: /use strict/i
 };
 
-var fileMatcher = new FileMatcher();
+var fileMatcher = new fm.FileMatcher();
 fileMatcher.find(options)
     .then(function(files) {
         // ...
@@ -138,19 +135,33 @@ fileMatcher.find(options)
 
 ```
 
-<!-- 
-# Documentation
+## Events
+TODO: insert the library events list.
 
 ## Examples
 Check out the examples available in
 
-
-## File-Matcher API
-
 # History
 For the list of all changes see the history log.
--->
-
 
 # License
-File-Matcher is MIT licensed. See the license file for details.
+
+Copyright (c) 2016 Mauricio Gemelli Vigolo <mgv@tisatec.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the 'Software'), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
