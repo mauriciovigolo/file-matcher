@@ -19,6 +19,7 @@
     },
     "homepage": "https://github.com/tisatec/file-matcher/examples/filematcher-ts-events/#readme",
     "dependencies": {
-        "file-matcher": "^1.0.0"
+        "file-matcher": "^1.0.0",
+        "clui": "0.3.1"
     }
 }
