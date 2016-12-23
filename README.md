@@ -64,7 +64,8 @@ The next topics show a simple example on how to use the library in Ecmascript an
 The following search looks for .js files in the /home/user/prjs/ directory, that were
 modified between 2016-12-23 and 2016-12-25, and the file content must have "use strict".
 
-``` js
+
+``` javascript
 
 var fm = require('file-matcher');
 
@@ -103,7 +104,8 @@ The same example, explained above - search to look for .js files in the /home/us
 modified between 2016-12-23 and 2016-12-25, and the file content must have "use strict", in Typescript could
 be:
 
-``` ts
+
+``` typescript
 import { FileMatcher, FindOptions } from 'file-matcher';
 
 let options: FindOptions = {
@@ -136,17 +138,29 @@ fileMatcher.find(options)
 ```
 
 ## Events
-TODO: insert the library events list.
+The file-matcher modules starts to look for files using the filename globs and filter attributes. The result of this first part will be a list of matching files. The next step is to filter by file content, using the informed RegExp. If there isn't a RegExp to validate, then the library will return the list of files that were found initially.
+
+During the file search, the following events are emitted:
+### Events emmitted while filtering by filename and file attributes:
+* `preSearchDirectory` - Root directory is visited and the search is beginning. Returns the directory.
+* `initSearchSubDirectory` - Emitted when the search is recursive and the search execution is starting to looking for files in a new subdirectory. Returns the subdirectory.
+* `endSearchSubDirectory` - The search inside a subdirectory was completed. Returns the parent dir and the promise resolve. Don't mess this promise resolve, otherwise you search could not continue.
+* `endSearchDirectory` - Search by filename and file attributes was completed. Returns the directory name and the total of found files.
+### Event emmitted while filtering by file content using the regex
+* `contentMatch` - Regex matched. Returns the filename and the percentage processed.
+
 
 ## Examples
 Check out the examples available in
 
+
 # History
 For the list of all changes see the history log.
 
+
 # License
 
-Copyright (c) 2016 Mauricio Gemelli Vigolo <mgv@tisatec.com>
+Copyright (c) 2016 Mauricio Gemelli Vigolo <mauriciovigolo@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the 'Software'), to deal
