@@ -5,3 +5,4 @@ coverage
 jsdoc
 API
 .vscode
+.nyc_output

@@ -5,7 +5,7 @@
         "outDir": "build/file-matcher",
         "moduleResolution": "node",
         "rootDir": ".",
-        "sourceMap": false,
+        "sourceMap": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "declaration": true,

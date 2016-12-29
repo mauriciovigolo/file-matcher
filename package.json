@@ -4,17 +4,17 @@
   "description": "Return list of files, matching by file attributes or/and contents",
   "main": "index.js",
   "scripts": {
-    "clean": "rm -rf ./build",
+    "clean": "rm -rf ./build ./coverage",
     "tslint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**'",
     "cp-package": "cp ./package.json ./build/file-matcher/",
     "build": "npm run clean &&  npm run tslint && tsc && npm run cp-package && echo '\n===> End of Build process'",
     "test": "npm run build && echo '\n===> Testing... ' && jasmine ./build/file-matcher/test/**/*.spec.js",
-    "coverage": "npm run build && istanbul cover jasmine ./build/file-matcher/test/**/*.spec.js",
-    "travis": "npm run build && istanbul cover node jasmine ./build/file-matcher/test --captureExceptions && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
+    "coverage": "nyc --reporter=json npm test && mv coverage/coverage-final.json coverage/coverage.json && remap-istanbul -i coverage/coverage.json -o coverage/coverage.json && istanbul report lcov && istanbul report text",
+    "travis": "npm run build && istanbul cover jasmine ./build/file-matcher/test/**/*.spec.js --captureExceptions && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tisatec/file-finder.git"
+    "url": "https://github.com/mauriciovigolo/file-matcher.git"
   },
   "keywords": [
     "fs",
@@ -35,12 +35,19 @@
     "regex",
     "typescript"
   ],
-  "author": "mauriciovigolo@gmail.com",
+  "author": {
+    "name": "Mauricio Gemelli Vigolo",
+    "email": "mauriciovigolo@gmail.com"
+  },
+  "engines": {
+    "node": ">=6.9.2",
+    "npm": ">=3.10.9"
+  },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tisatec/file-finder/issues"
+    "url": "https://github.com/mauriciovigolo/file-matcher/issues"
   },
-  "homepage": "https://github.com/tisatec/file-finder#readme",
+  "homepage": "https://github.com/mauriciovigolo/file-matcher",
   "devDependencies": {
     "@types/async": "^2.0.33",
     "@types/jasmine": "^2.5.38",
@@ -49,11 +56,21 @@
     "coveralls": "^2.11.15",
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.2",
+    "nyc": "^10.0.0",
+    "remap-istanbul": "^0.8.4",
     "tslint": "^3.10.2",
     "typescript": "^2.1.4"
   },
   "dependencies": {
     "async": "^2.1.4",
     "micromatch": "^2.3.11"
+  },
+  "nyc": {
+    "include": [
+      "build/file-matcher/**/*.js"
+    ],
+    "exclude": [
+      "build/file-matcher/**/*.spec.js"
+    ]
   }
 }
