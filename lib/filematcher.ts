@@ -175,20 +175,18 @@ export class FileMatcher extends EventEmitter {
         if (this.fileFilter.fileNamePattern) {
             let fileGlob = this.fileFilter.fileNamePattern;
 
-            if (fileGlob) {
-                if (typeof fileGlob !== 'string') {
-                    fileGlob = fileGlob as Array<string>;
+            if (typeof fileGlob !== 'string') {
+                fileGlob = fileGlob as Array<string>;
 
-                    fileGlob.forEach((item) => {
-                        if (item.indexOf('!') === 0) {
-                            this.negationFilter.push(item);
-                        }
-                    });
-                } else {
-                    if (fileGlob.indexOf('!') === 0) {
-                        fileGlob = fileGlob as string;
-                        this.negationFilter.push(fileGlob);
+                fileGlob.forEach((item) => {
+                    if (item.indexOf('!') === 0) {
+                        this.negationFilter.push(item);
                     }
+                });
+            } else {
+                if (fileGlob.indexOf('!') === 0) {
+                    fileGlob = fileGlob as string;
+                    this.negationFilter.push(fileGlob);
                 }
             }
         }
