@@ -1,6 +1,6 @@
 file-matcher
 =====================
-:rocket: Search files recursively using globs, file attributes and content match.
+Search files recursively using globs, file attributes and content match.
 
 
 ---
@@ -106,7 +106,7 @@ be:
 
 
 ``` typescript
-import { FileMatcher, FindOptions } from 'file-matcher';
+import { FileMatcher, FindOptions, AttributeType, PredicateOperator } from 'file-matcher';
 
 let options: FindOptions = {
     path: '/home/user/prjs/'
@@ -138,7 +138,7 @@ fileMatcher.find(options)
 ```
 
 ## Events
-The file-matcher modules starts to look for files using the filename globs and filter attributes. The result of this first part will be a list of matching files. The next step is to filter by file content, using the informed RegExp. If there isn't a RegExp to validate, then the library will return the list of files that were found initially.
+The file-matcher modules starts to look for files using the filename globs and filter attributes. The result of this search will be a list with the matching files. The next step is to filter by file content, using the RegExp. If there isn't a RegExp to validate, then the library will return the list of files that were found initially.
 
 During the file search, the following events are emitted:
 ### Events emmitted while filtering by filename and file attributes:
@@ -151,11 +151,13 @@ During the file search, the following events are emitted:
 
 
 ## Examples
-Check out the examples available in
+* [Basic Search - Ecmascript];
+* [Basic Search - Typescript];
+* [Search listening to the libraries Events - Typescript];
 
 
 # History
-For the list of all changes see the history log.
+For the list of all changes see the [history log](CHANGELOG).
 
 
 # License
@@ -179,3 +181,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
+
+[Basic Search - Ecmascript]: https://github.com/mauriciovigolo/file-matcher-examples/file-matcher-basic-es#README
+[Basic Search - Typescript]: https://github.com/mauriciovigolo/file-matcher-examples/file-matcher-basic-ts#README
+[Search listening to the libraries Events - Typescript]: https://github.com/mauriciovigolo/file-matcher-examples/file-matcher-events#README
