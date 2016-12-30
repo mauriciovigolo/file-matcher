@@ -164,7 +164,7 @@ During the file search, the following events are emitted:
 ## Examples
 * [Basic Search - Ecmascript];
 * [Basic Search - Typescript];
-* [Search listening to the libraries Events - Typescript];
+* [Search listening to the library events - Typescript];
 
 
 # History

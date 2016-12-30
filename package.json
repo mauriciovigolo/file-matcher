@@ -1,13 +1,14 @@
 {
   "name": "file-matcher",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "Return list of files, matching by file attributes or/and contents",
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf ./build ./coverage",
     "tslint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**'",
     "cp-package": "cp ./package.json ./build/file-matcher/",
-    "build": "npm run clean &&  npm run tslint && tsc && npm run cp-package && echo '\n===> End of Build process'",
+    "cp-md": "cp *.md ./build/file-matcher/",
+    "build": "npm run clean &&  npm run tslint && tsc && npm run cp-package && npm run cp-md && echo '\n===> End of Build process'",
     "test": "mkdir -p ./test/sandbox/c && npm run build && echo '\n===> Testing... ' && jasmine ./build/file-matcher/test/**/*.spec.js",
     "coverage": "nyc --reporter=json npm test && mv coverage/coverage-final.json coverage/coverage.json && remap-istanbul -i coverage/coverage.json -o coverage/coverage.json && istanbul report lcov && istanbul report text",
     "travis": "npm run coverage && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
