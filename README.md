@@ -43,6 +43,12 @@ $ npm i --save file-matcher
 **Typescript projects:**. No need to install an apart module for the typescript declarations files (ie.: @types/file-matcher),
 as the source already bundles it's d.ts files.
 
+### Versions
+Recommended to use in:
+- Node >= 6
+- Ecmascript >= 5
+- Typescript >= 2.0.0
+
 
 # Usage
 
@@ -50,10 +56,10 @@ The find function of filematcher provides the following search options:
 
 * `path` -  Path to be searched. ie: './lib/'
 * `fileFilter` -  options for filtering files, as:
-    - `fileNamePattern` - Glob pattern for looking for files - filenames. Example: ```js ['**/*.js'] ```
+    - `fileNamePattern` - Glob pattern for looking for files - filenames. Example: ```['**/*.js'] ```
     - `attributeFilters` - Array of filters - filter by file attributes like size, birth and modification dates. Example: ```js [{ type: AttributeType.Size, value: 10, operator: PredicateOperator.GreaterThan }] ```
-    - `content` - RegExp to validade file content, ie: ```js /test/i ```
-    - `fileReadOptions` - These options will be used in the Node.JS `fs.ReadFile` function. So it has the same options as the original. Example: ```js { encoding:'utf8', flag: 'r' }```
+    - `content` - RegExp to validade file content, ie: ```/test/i ```
+    - `fileReadOptions` - These options will be used in the Node.JS `fs.ReadFile` function. So it has the same options as the original. Example: ```{ encoding:'utf8', flag: 'r' }```
 * `recursiveSearch` - Tells the finder to search recursively from the given path. This is a boolean attribute, and the default value is false.
 
 The next topics show a simple example on how to use the library in Ecmascript and Typescript.
@@ -137,8 +143,9 @@ fileMatcher.find(options)
 
 ```
 
+
 ## Events
-The file-matcher modules starts to look for files using the filename globs and filter attributes. The result of this search will be a list with the matching files. The next step is to filter by file content, using the RegExp. If there isn't a RegExp to validate, then the library will return the list of files that were found initially.
+The file-matcher module starts to look for files using the filename glob and filter attributes. The result of this search is a list with the matching files. The next step is to filter by file content, using the RegExp. If there isn't a RegExp to validate, then the library will return the list of files that were found initially.
 
 During the file search, the following events are emitted:
 ### Events emmitted while filtering by filename and file attributes:
