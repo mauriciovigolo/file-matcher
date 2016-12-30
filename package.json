@@ -49,7 +49,6 @@
   },
   "homepage": "https://github.com/mauriciovigolo/file-matcher",
   "devDependencies": {
-    "@types/async": "^2.0.33",
     "@types/jasmine": "^2.5.38",
     "@types/micromatch": "^2.3.29",
     "@types/node": "^6.0.50",
@@ -62,7 +61,6 @@
     "typescript": "^2.1.4"
   },
   "dependencies": {
-    "async": "^2.1.4",
     "micromatch": "^2.3.11"
   },
   "nyc": {

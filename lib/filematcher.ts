@@ -5,8 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://github.com/mauriciovigolo/file-matcher/LICENSE
  */
-
-import * as async from 'async';
 import { EventEmitter } from 'events';
 import * as fs from 'fs';
 import * as mm from 'micromatch';
@@ -118,7 +116,7 @@ export class FileMatcher extends EventEmitter {
 
         this.init(criteria);
 
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (!this.path) {
                 reject('The path must be informed to execute the file search!');
                 return;
@@ -130,16 +128,14 @@ export class FileMatcher extends EventEmitter {
                 return;
             }
 
-            async.waterfall([
-                callback => this.filterFiles(callback),
-                callback => this.filterFileContent(callback)
-            ], (err, files) => {
-                if (err) {
-                    reject(err);
-                }
+            try {
+                await this.readDirectory(this.path);
+                let files = await this.filterFileContent();
 
                 resolve(files);
-            });
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
@@ -190,22 +186,6 @@ export class FileMatcher extends EventEmitter {
                 }
             }
         }
-    }
-
-    /**
-     * Filter the files, reading the directory and applying the filename pattern and
-     * file attribute filters.
-     *
-     * @param {any} callback - async's callback.
-     */
-    private filterFiles(callback: any) {
-        this.readDirectory(this.path)
-            .then(() => {
-                callback();
-            })
-            .catch((err) => {
-                callback(err);
-            });
     }
 
     /**
@@ -406,36 +386,39 @@ export class FileMatcher extends EventEmitter {
     /**
      * Filter files by content.
      *
-     * @param {any} callback - async's callback.
+     * @return {Promise<any>} - promise resolving the matched files.
      */
-    private filterFileContent(callback: any) {
+    private filterFileContent(): Promise<any> {
         let self = this;
-        let matchingFiles: Array<string> = [];
 
-        if (this.fileFilter.content && this.files && this.files.length > 0) {
-            this.files.some((file, index) => {
-                this.readFileContent(file)
-                    .then((result) => {
-                        if (result) {
-                            let processed: number = index / this.files.length;
-                            self.emit('contentMatch', file, processed);
-                            matchingFiles.push(result);
-                        }
+        return new Promise((resolve, reject) => {
+            let matchingFiles: Array<string> = [];
 
-                        if ((self.files.length - 1) === index) {
-                            callback(null, matchingFiles);
+            if (this.fileFilter.content && this.files && this.files.length > 0) {
+                this.files.some((file, index) => {
+                    this.readFileContent(file)
+                        .then((result) => {
+                            if (result) {
+                                let processed: number = index / this.files.length;
+                                self.emit('contentMatch', file, processed);
+                                matchingFiles.push(result);
+                            }
+
+                            if ((self.files.length - 1) === index) {
+                                resolve(matchingFiles);
+                                return true;
+                            }
+                        }).catch(err => {
+                            reject(err);
                             return true;
-                        }
-                    }).catch(err => {
-                        callback(err);
-                        return true;
-                    });
-                return false;
-            });
-        } else {
-            matchingFiles = this.files;
-            callback(null, matchingFiles);
-        }
+                        });
+                    return false;
+                });
+            } else {
+                matchingFiles = this.files;
+                resolve(matchingFiles);
+            }
+        });
     }
 
     /**
