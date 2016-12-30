@@ -3,6 +3,10 @@ file-matcher
 Search files recursively using globs, file attributes and content match.
 
 
+[![Build Status](https://travis-ci.org/mauriciovigolo/file-matcher.svg?branch=master)](https://travis-ci.org/mauriciovigolo/file-matcher)
+[![Coverage Status](https://coveralls.io/repos/github/mauriciovigolo/file-matcher/badge.svg?branch=master)](https://coveralls.io/github/mauriciovigolo/file-matcher?branch=master)
+[![Join the chat at https://gitter.im/mauriciovigolo/file-matcher](https://img.shields.io/gitter/room/mauriciovigolo/file-matcher.svg)](https://gitter.im/mauriciovigolo/file-matcher?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ---
 
 * Possibility to use globs for filename patterns.
