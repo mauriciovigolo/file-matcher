@@ -15,3 +15,15 @@ Features
 Features
 ---
 * ***CI*** - Added Travis CI and coveralls.
+
+
+<a name="1.0.0-rc.3"></a>
+# 1.0.0-rc.3 (2016-12-30)
+
+Improving documentation.
+
+
+<a name="1.0.0-rc.4"></a>
+# 1.0.0-rc.3 (2016-12-31)
+
+Improving documentation and examples.

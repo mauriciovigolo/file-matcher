@@ -44,8 +44,20 @@ The result is a promise, resolved with an array of filenames that matched the cr
 ```
 $ npm i --save file-matcher
 ```
-**Typescript projects:**. No need to install an apart module for the typescript declarations files (ie.: @types/file-matcher),
+**Typescript projects:**. 
+1. No need to install an apart module for the typescript declarations files (ie.: @types/file-matcher),
 as the source already bundles it's d.ts files.
+2. Insert the following configuration inside the compilerOptions of the project's tsconfig.json file:
+
+``` json
+"compilerOptions": {
+    "lib": [
+        "es2015"
+    ]    
+}  
+```
+This will give support for promises and collections features, without any external libraries. This configuration is mandatory for Typescript projects.
+
 
 ### Versions
 Recommended to use in:
@@ -84,14 +96,14 @@ var options = {
     fileNamePattern: '[**/*.js]',
     attributeFilter: [
         {
-            type: AttributeType.ModifiedDate,
+            type: fm.AttributeType.ModifiedDate,
             value:  new Date(2016, 11, 25),
-            operator: PredicateOperator.LessThan
+            operator: fm.PredicateOperator.LessThan
         },
         {
-            type: AttributeType.ModifiedDate,
+            type: fm.AttributeType.ModifiedDate,
             value:  new Date(2016, 11, 23),
-            operator: PredicateOperator.GreaterThan
+            operator: fm.PredicateOperator.GreaterThan
         },
     ],
     content: /use strict/i
@@ -162,6 +174,8 @@ During the file search, the following events are emitted:
 
 
 ## Examples
+Checkout the [Github examples repo] or go strait to the examples:
+
 * [Basic Search - Ecmascript];
 * [Basic Search - Typescript];
 * [Search listening to the library events - Typescript];
@@ -178,6 +192,7 @@ Licensed under [MIT](LICENSE.md).
 Copyright (c) 2016 Mauricio Gemelli Vigolo <mauriciovigolo@gmail.com>
 
 
-[Basic Search - Ecmascript]: https://github.com/mauriciovigolo/file-matcher-examples/file-matcher-basic-es#README
-[Basic Search - Typescript]: https://github.com/mauriciovigolo/file-matcher-examples/file-matcher-basic-ts#README
-[Search listening to the libraries Events - Typescript]: https://github.com/mauriciovigolo/file-matcher-examples/file-matcher-events#README
+[Basic Search - Ecmascript]:(https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-es)
+[Basic Search - Typescript]: (https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-ts)
+[Search listening to the library events - Typescript]:(https://github.com/mauriciovigolo/file-matcher-examples/tree/master/events-search-ts)
+[Github examples repo]:(https://github.com/mauriciovigolo/file-matcher-examples#README)
