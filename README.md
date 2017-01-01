@@ -192,7 +192,7 @@ Licensed under [MIT](LICENSE.md).
 Copyright (c) 2016 Mauricio Gemelli Vigolo <mauriciovigolo@gmail.com>
 
 
-[Basic Search - Ecmascript]:(https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-es)
-[Basic Search - Typescript]: (https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-ts)
-[Search listening to the library events - Typescript]:(https://github.com/mauriciovigolo/file-matcher-examples/tree/master/events-search-ts)
-[Github examples repo]:(https://github.com/mauriciovigolo/file-matcher-examples#README)
+[Basic Search - Ecmascript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-es)
+[Basic Search - Typescript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-ts)
+[Search listening to the library events - Typescript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/events-search-ts)
+[Github examples repo](https://github.com/mauriciovigolo/file-matcher-examples#README)
