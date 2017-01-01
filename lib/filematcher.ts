@@ -239,8 +239,6 @@ export class FileMatcher extends EventEmitter {
             if (stats.isDirectory()) {
                 // Should search recursively?
                 if (this.recursiveSearch) {
-                    this.emit('initSearchSubDirectory', dir);
-
                     this.processing.push({
                         dir: item,
                         parentDir: dir,

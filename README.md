@@ -56,7 +56,7 @@ as the source already bundles it's d.ts files.
     ]    
 }  
 ```
-This will give support for promises and collections features, without any external libraries. This configuration is mandatory for Typescript projects.
+This will give support for promises and collections features without the need of an external library. This configuration is mandatory for Typescript projects.
 
 
 ### Versions
@@ -165,8 +165,7 @@ The file-matcher module starts to look for files using the filename glob and fil
 
 During the file search, the following events are emitted:
 ### Events emmitted while filtering by filename and file attributes:
-* `preSearchDirectory` - Root directory is visited and the search is beginning. Returns the directory.
-* `initSearchSubDirectory` - Emitted when the search is recursive and the search execution is starting to looking for files in a new subdirectory. Returns the subdirectory.
+* `preSearchDirectory` - Emitted on before visiting the directory / subdirectories. Returns the directory.
 * `endSearchSubDirectory` - The search inside a subdirectory was completed. Returns the parent dir and the promise resolve. Don't mess this promise resolve, otherwise you search could not continue.
 * `endSearchDirectory` - Search by filename and file attributes was completed. Returns the directory name and the total of found files.
 ### Event emmitted while filtering by file content using the regex
