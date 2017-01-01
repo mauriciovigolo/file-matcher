@@ -173,11 +173,11 @@ During the file search, the following events are emitted:
 
 
 ## Examples
-Checkout the [Github examples repo] or go strait to the examples:
+Checkout the [Github examples repo](https://github.com/mauriciovigolo/file-matcher-examples#README) or go strait to the examples:
 
-* [Basic Search - Ecmascript];
-* [Basic Search - Typescript];
-* [Search listening to the library events - Typescript];
+* [Basic Search - Ecmascript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-es);
+* [Basic Search - Typescript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-ts);
+* [Search listening to the library events - Typescript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/events-search-ts);
 
 
 # History
@@ -189,9 +189,3 @@ For the list of all changes see the [history log](CHANGELOG.md).
 Licensed under [MIT](LICENSE.md).
 
 Copyright (c) 2017 Mauricio Gemelli Vigolo <mauriciovigolo@gmail.com>
-
-
-[Basic Search - Ecmascript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-es)
-[Basic Search - Typescript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-ts)
-[Search listening to the library events - Typescript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/events-search-ts)
-[Github examples repo](https://github.com/mauriciovigolo/file-matcher-examples#README)
