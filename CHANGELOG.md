@@ -42,3 +42,8 @@ Features
 Bug Fixes
 ---
 * ***contentMatch Event*** - changed to return the processed as percentage and value change.
+
+<a name="1.0.0-rc.6"></a>
+# 1.0.0-rc.6 (2017-01-01)
+
+Docs update
