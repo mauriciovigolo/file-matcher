@@ -189,7 +189,7 @@ For the list of all changes see the [history log](CHANGELOG.md).
 
 Licensed under [MIT](LICENSE.md).
 
-Copyright (c) 2016 Mauricio Gemelli Vigolo <mauriciovigolo@gmail.com>
+Copyright (c) 2017 Mauricio Gemelli Vigolo <mauriciovigolo@gmail.com>
 
 
 [Basic Search - Ecmascript](https://github.com/mauriciovigolo/file-matcher-examples/tree/master/basic-search-es)
