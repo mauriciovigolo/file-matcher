@@ -30,8 +30,6 @@ import { ReadFileOptions } from './interfaces/readfileoptions';
  *
  * This class extends the Node's EventEmitter. The following events are triggered:
  * - preSearchDirectory: emitted when the search starts to look for matching files in new directory.
- * - initSearchSubDirectory: emitted in the beginning of the search in a subdirectory.
- * - endSearchSubDirectory: emitted when the search in the subdirectory ends.
  * - endSearchDirectory: emitted when the search ends. This event is emitted only once.
  * - contentMatch: emitted when the content regex is matched.
  * 
@@ -375,7 +373,7 @@ export class FileMatcher extends EventEmitter {
             if (this.files && this.files.length > 0) {
                 totalOfFiles = this.files.length;
             }
-            this.emit('endSearchDirectory', dir, totalOfFiles);
+            this.emit('endSearchDirectory', this.files, totalOfFiles);
         }
 
         resolve();
@@ -397,7 +395,7 @@ export class FileMatcher extends EventEmitter {
                     this.readFileContent(file)
                         .then((result) => {
                             if (result) {
-                                let processed: number = index / this.files.length;
+                                let processed: number = ((index + 1) / this.files.length) * 100;
                                 self.emit('contentMatch', file, processed);
                                 matchingFiles.push(result);
                             }

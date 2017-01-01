@@ -47,6 +47,7 @@ $ npm i --save file-matcher
 **Typescript projects:**. 
 1. No need to install an apart module for the typescript declarations files (ie.: @types/file-matcher),
 as the source already bundles it's d.ts files.
+
 2. Insert the following configuration inside the compilerOptions of the project's tsconfig.json file:
 
 ``` json
@@ -166,8 +167,7 @@ The file-matcher module starts to look for files using the filename glob and fil
 During the file search, the following events are emitted:
 ### Events emmitted while filtering by filename and file attributes:
 * `preSearchDirectory` - Emitted on before visiting the directory / subdirectories. Returns the directory.
-* `endSearchSubDirectory` - The search inside a subdirectory was completed. Returns the parent dir and the promise resolve. Don't mess this promise resolve, otherwise you search could not continue.
-* `endSearchDirectory` - Search by filename and file attributes was completed. Returns the directory name and the total of found files.
+* `endSearchDirectory` - Search by filename and file attributes was completed. Returns the list and the total of matched files, however be aware that this is not the final list of files if you are also searching for content match.
 ### Event emmitted while filtering by file content using the regex
 * `contentMatch` - Regex matched. Returns the filename and the percentage processed.
 
