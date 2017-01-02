@@ -1,32 +1,8 @@
-<a name="1.0.0-rc.1"></a>
-# 1.0.0-rc.1 (2016-12-30)
+<a name="1.0.0-rc.6"></a>
+# 1.0.0-rc.6 (2017-01-01)
 
-Migration from bitbucket to Github. First release as opensource project.
+Docs update
 
-Features
----
-* ***Dependencies change*** - removed async module dependency to start using async/await from typescript. Now the library has only one dependency - micromacth.
-* ***Project status*** - coded, tested and production ready, however the version is RC for documenting purposes - to publish the library examples.
-
-
-<a name="1.0.0-rc.2"></a>
-# 1.0.0-rc.2 (2016-12-30)
-
-Features
----
-* ***CI*** - Added Travis CI and coveralls.
-
-
-<a name="1.0.0-rc.3"></a>
-# 1.0.0-rc.3 (2016-12-30)
-
-Improving documentation.
-
-
-<a name="1.0.0-rc.4"></a>
-# 1.0.0-rc.4 (2016-12-31)
-
-Improving documentation and examples.
 
 <a name="1.0.0-rc.5"></a>
 # 1.0.0-rc.5 (2017-01-01)
@@ -43,7 +19,33 @@ Bug Fixes
 ---
 * ***contentMatch Event*** - changed to return the processed as percentage and value change.
 
-<a name="1.0.0-rc.6"></a>
-# 1.0.0-rc.6 (2017-01-01)
 
-Docs update
+<a name="1.0.0-rc.4"></a>
+# 1.0.0-rc.4 (2016-12-31)
+
+Improving documentation and examples.
+
+
+<a name="1.0.0-rc.3"></a>
+# 1.0.0-rc.3 (2016-12-30)
+
+Improving documentation.
+
+
+<a name="1.0.0-rc.2"></a>
+# 1.0.0-rc.2 (2016-12-30)
+
+Features
+---
+* ***CI*** - Added Travis CI and coveralls.
+
+
+<a name="1.0.0-rc.1"></a>
+# 1.0.0-rc.1 (2016-12-30)
+
+Migration from bitbucket to Github. First release as opensource project.
+
+Features
+---
+* ***Dependencies change*** - removed async module dependency to start using async/await from typescript. Now the library has only one dependency - micromacth.
+* ***Project status*** - coded, tested and production ready, however the version is RC for documenting purposes - to publish the library examples.
