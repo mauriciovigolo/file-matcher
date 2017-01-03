@@ -1,3 +1,9 @@
+<a name="1.0.0"></a>
+# 1.0.0 (2017-01-02)
+
+Official release milestone.
+
+
 <a name="1.0.0-rc.7"></a>
 # 1.0.0-rc.7 (2017-01-02)
 
