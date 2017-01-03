@@ -395,7 +395,7 @@ export class FileMatcher extends EventEmitter {
                     this.readFileContent(file)
                         .then((result) => {
                             if (result) {
-                                let processed: number = ((index + 1) / this.files.length) * 100;
+                                let processed: number = (index + 1) / this.files.length;
                                 self.emit('contentMatch', file, processed);
                                 matchingFiles.push(result);
                             }

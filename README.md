@@ -12,7 +12,7 @@ Search files recursively using globs, file attributes and content match.
 * Possibility to use globs for filename patterns.
 * Search by file attributes as modified date, birth date and/or file size, using predicate operators: Equal, NotEqual, GreaterThen, LessThan.
 * Optionally it's possible to refine the search by using a RegExp to match the file content.
-* FileMatcher inherits from Node's EventEmitter, so it's possible to catch events like entering the search directory, file matched, content match processing percentage.
+* FileMatcher inherits from Node's EventEmitter, so it's possible to catch events like entering the search directory, file matched, content match processing ratio.
 * Written in Typescript.
 * Compatible with ES5 and further.
 
@@ -169,7 +169,7 @@ During the file search, the following events are emitted:
 * `preSearchDirectory` - Emitted on before visiting the directory / subdirectories. Returns the directory.
 * `endSearchDirectory` - Search by filename and file attributes was completed. Returns the list and the total of matched files, however be aware that this is not the final list of files if you are also searching for content match.
 ### Event emmitted while filtering by file content using the regex
-* `contentMatch` - Regex matched. Returns the filename and the percentage processed.
+* `contentMatch` - Regex matched. Returns the filename and the processed ratio (0 to 1).
 
 
 ## Examples
