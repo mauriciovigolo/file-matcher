@@ -1,3 +1,11 @@
+<a name="1.0.0-rc.7"></a>
+# 1.0.0-rc.7 (2017-01-02)
+
+Features
+---
+* ***contentMatch Event*** - changed to return the processed from percentage to ratio.
+
+
 <a name="1.0.0-rc.6"></a>
 # 1.0.0-rc.6 (2017-01-01)
 
