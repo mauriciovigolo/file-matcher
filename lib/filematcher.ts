@@ -20,11 +20,11 @@ import { ReadFileOptions } from './interfaces/readfileoptions';
 
 /**
  * @author Mauricio Gemelli Vigolo
- * 
+ *
  * @module
- * 
+ *
  * @description
- * Finds file(s) by name / contents, according to the @see {@link FindOptions} criteria -  by filename 
+ * Finds file(s) by name / contents, according to the @see {@link FindOptions} criteria -  by filename
  * (using globs) or file attribute as size, birth and modified date. Finally it's possible to refine
  * the search by using a regex to match file contents. The search can be done recursively or not.
  *
@@ -32,7 +32,7 @@ import { ReadFileOptions } from './interfaces/readfileoptions';
  * - preSearchDirectory: emitted when the search starts to look for matching files in new directory.
  * - endSearchDirectory: emitted when the search ends. This event is emitted only once.
  * - contentMatch: emitted when the content regex is matched.
- * 
+ *
  * @example
  * ``` ts
  * let finder: FileFinder = new FileFinder();
@@ -50,7 +50,7 @@ import { ReadFileOptions } from './interfaces/readfileoptions';
  *          ],
  *          content: /test/i,
  *          fileReadOptions: {
- *              encoding: 'utf8' 
+ *              encoding: 'utf8'
  *              flag: 'r'
  *          }
  *      },
@@ -106,15 +106,20 @@ export class FileMatcher extends EventEmitter {
      *
      * @param {FindOptions} - [criteria]
      *
-     * @return {Promise} 
+     * @return {Promise}
      * returns a promise with the results of the find execution.
      */
     find(criteria: FindOptions): Promise<string[]> {
         let files: Array<string> = [];
 
-        this.init(criteria);
-
         return new Promise(async (resolve, reject) => {
+            try {
+                this.init(criteria);
+            } catch (e) {
+                reject(e);
+                return;
+            }
+
             if (!this.path) {
                 reject('The path must be informed to execute the file search!');
                 return;
@@ -150,6 +155,12 @@ export class FileMatcher extends EventEmitter {
             this.path = undefined;
         }
 
+        this.recursiveSearch = criteria.recursiveSearch || false;
+
+        if (!criteria.fileFilter) {
+            throw new Error('FileFilter object should not be null or undefined!');
+        }
+
         this.fileFilter = criteria.fileFilter;
 
         if (this.fileFilter.content) {
@@ -160,7 +171,6 @@ export class FileMatcher extends EventEmitter {
             this.fileFilter.attributeFilters = undefined;
         }
 
-        this.recursiveSearch = criteria.recursiveSearch || false;
 
         this.files = [];
         this.processing = [];

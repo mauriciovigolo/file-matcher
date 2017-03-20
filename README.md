@@ -44,7 +44,7 @@ The result is a promise, resolved with an array of filenames that matched the cr
 ```
 $ npm i --save file-matcher
 ```
-**Typescript projects:**. 
+**Typescript projects:**.
 1. No need to install an apart module for the typescript declarations files (ie.: @types/file-matcher),
 as the source already bundles it's d.ts files.
 
@@ -54,8 +54,8 @@ as the source already bundles it's d.ts files.
 "compilerOptions": {
     "lib": [
         "es2015"
-    ]    
-}  
+    ]
+}
 ```
 This will give support for promises and collections features without the need of an external library. This configuration is mandatory for Typescript projects.
 
@@ -85,7 +85,7 @@ The next topics show a simple example on how to use the library in Ecmascript an
 ## Ecmascript
 
 The following search looks for .js files in the /home/user/prjs/ directory, that were
-modified between 2016-12-23 and 2016-12-25, and the file content must have "use strict".
+modified between 2016-12-23 and 2016-12-25, and content with "use strict".
 
 
 ``` javascript
@@ -93,21 +93,24 @@ modified between 2016-12-23 and 2016-12-25, and the file content must have "use 
 var fm = require('file-matcher');
 
 var options = {
-    path: '/home/user/prjs/'
-    fileNamePattern: '[**/*.js]',
-    attributeFilter: [
-        {
-            type: fm.AttributeType.ModifiedDate,
-            value:  new Date(2016, 11, 25),
-            operator: fm.PredicateOperator.LessThan
-        },
-        {
-            type: fm.AttributeType.ModifiedDate,
-            value:  new Date(2016, 11, 23),
-            operator: fm.PredicateOperator.GreaterThan
-        },
-    ],
-    content: /use strict/i
+    path: '/home/user/prjs/',
+    recursiveSearch: true,
+    fileFilter: {
+        fileNamePattern: '**/*.js',
+        content: /use strict/i,
+        attributeFilters: [
+            {
+                type: fm.AttributeType.ModifiedDate,
+                operator: fm.PredicateOperator.LessThan
+                value:  new Date(2016, 11, 25),
+            },
+            {
+                type: fm.AttributeType.ModifiedDate,
+                operator: fm.PredicateOperator.GreaterThan
+                value:  new Date(2016, 11, 23),
+            }
+        ]
+    }
 };
 
 var fileMatcher = new fm.FileMatcher();
@@ -124,29 +127,31 @@ fileMatcher.find(options)
 ## Typescript
 
 The same example, explained above - search to look for .js files in the /home/user/prjs/ directory, that were
-modified between 2016-12-23 and 2016-12-25, and the file content must have "use strict", in Typescript could
-be:
+modified between 2016-12-23 and 2016-12-25, and content must have "use strict". In Typescript it would be:
 
 
 ``` typescript
 import { FileMatcher, FindOptions, AttributeType, PredicateOperator } from 'file-matcher';
 
 let options: FindOptions = {
-    path: '/home/user/prjs/'
-    fileNamePattern: '[**/*.js]',
-    attributeFilter: [
-        {
-            type: AttributeType.ModifiedDate,
-            value:  new Date(2016, 11, 25),
-            operator: PredicateOperator.LessThan
-        },
-        {
-            type: AttributeType.ModifiedDate,
-            value:  new Date(2016, 11, 23),
-            operator: PredicateOperator.GreaterThan
-        },
-    ],
-    content: /use strict/i
+    path: '/home/user/prjs/',
+    recursiveSearch: true,
+    fileFilter: {
+        fileNamePattern: '**/*.js',
+        content: /use strict/,
+        attributeFilters: [
+            {
+                type: AttributeType.ModifiedDate,
+                operator: PredicateOperator.LessThan
+                value:  new Date(2016, 11, 25),
+            },
+            {
+                type: AttributeType.ModifiedDate,
+                operator: PredicateOperator.GreaterThan
+                value:  new Date(2016, 11, 23),
+            }
+        ]
+    }
 };
 
 let fileMatcher = new FileMatcher();
