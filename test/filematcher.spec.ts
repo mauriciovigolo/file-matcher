@@ -193,6 +193,22 @@ describe('FileMatcher Tests', function () {
     });
 
     /*
+     * Should result in error, if filter is undefined
+     */
+    it('Should result in error, if filter is undefined', (done) => {
+        finder.find({
+            path: appPath,
+            fileFilter: undefined
+        }).then(files => {
+            expect('It shouldnt be here!').toBeUndefined();
+            done();
+        }).catch(err => {
+            expect(err).toBeDefined();
+            done();
+        });
+    });
+
+    /*
      * Should result in error, if no filters declared.
      */
     it('Should result in error, if no filters declared.', (done) => {
