@@ -118,7 +118,7 @@ fileMatcher.find(options)
     .then(function(files) {
         // ...
     })
-    .catch(function(error)=> {
+    .catch(function(error) {
         // ...
     });
 ```
