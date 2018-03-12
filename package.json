@@ -67,7 +67,7 @@
     "typescript": "^2.2.1"
   },
   "dependencies": {
-    "micromatch": "^2.3.11"
+    "micromatch": "^3.0.0"
   },
   "nyc": {
     "include": [
