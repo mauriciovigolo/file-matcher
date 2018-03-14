@@ -193,4 +193,4 @@ For the list of all changes see the [history log](CHANGELOG.md).
 
 Licensed under [MIT](LICENSE.md).
 
-Copyright (c) 2017 Mauricio Gemelli Vigolo <mauriciovigolo@gmail.com>
+Copyright (c) 2018 Mauricio Gemelli Vigolo and contributors.
