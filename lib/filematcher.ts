@@ -295,7 +295,7 @@ export class FileMatcher extends EventEmitter {
 
         // Check filename pattern
         if (fileNamePattern) {
-            matchFilter = mm(file, fileNamePattern).length > 0;
+            matchFilter = mm([file], fileNamePattern).length > 0;
         }
 
         // Check file attributes as size, birth and modified date.
