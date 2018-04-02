@@ -70,7 +70,7 @@
     "typescript": "^2.8.1"
   },
   "dependencies": {
-    "micromatch": "^3.0.0"
+    "micromatch": "^3.1.10"
   },
   "nyc": {
     "include": ["build/file-matcher/**/*.js"],
