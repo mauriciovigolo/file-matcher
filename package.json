@@ -1,6 +1,6 @@
 {
   "name": "file-matcher",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Return list of files, matching by file attributes or/and contents",
   "main": "index.js",
   "scripts": {
