@@ -1,6 +1,6 @@
 {
   "name": "file-matcher",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Return list of files, matching by file attributes or/and contents",
   "main": "index.js",
   "scripts": {
@@ -9,9 +9,12 @@
     "cp-package": "npx shx cp ./package.json ./build/file-matcher/",
     "cp-md": "npx shx cp *.md ./build/file-matcher/",
     "build": "npm run clean &&  npm run tslint && tsc && npm run cp-package && npm run cp-md",
-    "test": "npx shx mkdir -p ./test/sandbox/c && npm run build && npx jasmine ./build/file-matcher/test/**/*.spec.js",
-    "coverage": "npx nyc --reporter=json npm test && npx shx mv coverage/coverage-final.json coverage/coverage.json && npx remap-istanbul -i coverage/coverage.json -o coverage/coverage.json && npx istanbul report lcov && npx istanbul report text",
-    "travis": "npm run coverage && npx shx cat ./coverage/lcov.info | coveralls && npx shx rm -rf ./coverage"
+    "test":
+      "npx shx mkdir -p ./test/sandbox/c && npm run build && npx jasmine ./build/file-matcher/test/**/*.spec.js",
+    "coverage":
+      "npx nyc --reporter=json npm test && npx shx mv coverage/coverage-final.json coverage/coverage.json && npx remap-istanbul -i coverage/coverage.json -o coverage/coverage.json && npx istanbul report lcov && npx istanbul report text",
+    "travis":
+      "npm run coverage && npx shx cat ./coverage/lcov.info | coveralls && npx shx rm -rf ./coverage"
   },
   "repository": {
     "type": "git",
@@ -42,11 +45,11 @@
   ],
   "author": {
     "name": "Mauricio Gemelli Vigolo",
-    "email": "mauriciovigolo@gmail.com"
+    "email": "@mauriciovigolo"
   },
   "engines": {
-    "node": ">=6.9.2",
-    "npm": ">=3.10.9"
+    "node": ">=8.9.0",
+    "npm": ">=5.0.0"
   },
   "license": "MIT",
   "bugs": {
@@ -54,27 +57,23 @@
   },
   "homepage": "https://github.com/mauriciovigolo/file-matcher",
   "devDependencies": {
-    "@types/jasmine": "^2.5.46",
-    "@types/micromatch": "^2.3.29",
-    "@types/node": "^7.0.8",
-    "coveralls": "^2.12.0",
+    "@types/jasmine": "^2.8.6",
+    "@types/micromatch": "^3.1.0",
+    "@types/node": "^9.6.1",
+    "coveralls": "^3.0.0",
     "istanbul": "^0.4.5",
-    "jasmine": "^2.5.3",
-    "nyc": "^10.1.2",
-    "remap-istanbul": "^0.9.1",
+    "jasmine": "^3.1.0",
+    "nyc": "^11.6.0",
+    "remap-istanbul": "^0.11.0",
     "shx": "^0.2.2",
-    "tslint": "^4.5.1",
-    "typescript": "^2.7.2"
+    "tslint": "^5.9.1",
+    "typescript": "^2.8.1"
   },
   "dependencies": {
     "micromatch": "^3.0.0"
   },
   "nyc": {
-    "include": [
-      "build/file-matcher/**/*.js"
-    ],
-    "exclude": [
-      "build/file-matcher/**/*.spec.js"
-    ]
+    "include": ["build/file-matcher/**/*.js"],
+    "exclude": ["build/file-matcher/**/*.spec.js"]
   }
 }
