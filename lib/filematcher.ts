@@ -397,32 +397,33 @@ export class FileMatcher extends EventEmitter {
     private filterFileContent(): Promise<any> {
         let self = this;
 
+        let errors = {};
         return new Promise((resolve, reject) => {
-            let matchingFiles: Array<string> = [];
-
             if (this.fileFilter.content && this.files && this.files.length > 0) {
-                this.files.some((file, index) => {
-                    this.readFileContent(file)
-                        .then((result) => {
-                            if (result) {
-                                let processed: number = (index + 1) / this.files.length;
-                                self.emit('contentMatch', file, processed);
-                                matchingFiles.push(result);
-                            }
-
-                            if ((self.files.length - 1) === index) {
-                                resolve(matchingFiles);
-                                return true;
-                            }
-                        }).catch(err => {
-                            reject(err);
-                            return true;
-                        });
-                    return false;
-                });
+              // Search async in all files. Resolve if found any. (Promise.all stops on first error)
+              Promise.all(
+                this.files.map((file, index) => {
+                  // Search for conent in each file. Record error and don't propagate
+                  return this.readFileContent(file)
+                    .then((result) => {
+                      if (result) {
+                        let processed: number = (index + 1) / this.files.length;
+                        self.emit('contentMatch', file, processed);
+                      }
+                      return result;
+                    }).catch( err => {
+                      errors[file] = err;
+                    });
+                })
+              ).then((matchingFiles) => {
+                // All promises ended in error:
+                if (Object.keys(errors).length === this.files.length) {
+                  reject(errors);
+                }
+                resolve(matchingFiles.filter((result) => result));
+              });
             } else {
-                matchingFiles = this.files;
-                resolve(matchingFiles);
+                resolve(this.files);
             }
         });
     }
