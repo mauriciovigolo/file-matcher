@@ -225,9 +225,6 @@ export class FileMatcher extends EventEmitter {
                   // Call endFileSearch only when all items are done.
                   self.endFileSearch(dir);
                   resolve();
-                }).catch(err => {
-                  self.endFileSearch(dir);
-                  reject(err);
                 });
             });
         });
@@ -255,8 +252,7 @@ export class FileMatcher extends EventEmitter {
 
                     // This item is done only when the directory is done
                     this.readDirectory(item)
-                        .then(() => resolve())
-                        .catch(err => reject(err));
+                        .then(() => resolve());
                 } else {
                   resolve();
                 }
