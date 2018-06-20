@@ -81,8 +81,6 @@ export class FileMatcher extends EventEmitter {
         this.files = [];
         this.processing = [];
         this.setMaxListeners(0);
-
-        this.registerEventListeners();
     }
 
     /**
@@ -217,15 +215,16 @@ export class FileMatcher extends EventEmitter {
 
                 list = mm(list, this.negationFilter);
 
-                if (list.length === 0) {
-                    self.endFileSearch(dir, resolve);
-                }
-
                 let totalItensList: number = list.length - 1;
 
-                list.forEach(function (item, index) {
+                // Each item is checked in its own promise. We need to process all files to call the search completed
+                Promise.all(list.map(function (item, index) {
                     item = path.resolve(dir, item);
-                    self.checkAndApplyFilters(dir, item, resolve, reject, totalItensList, index);
+                    return self.checkAndApplyFilters(dir, item);
+                })).then(() => {
+                  // Call endFileSearch only when all items are done.
+                  self.endFileSearch(dir);
+                  resolve();
                 });
             });
         });
@@ -237,13 +236,11 @@ export class FileMatcher extends EventEmitter {
      *
      * @param {string} dir - parent's directory.
      * @param {string} item - directory item that will checked, if it's a subdirectory or a file.
-     * @param {Function} resolve - promise's resolve function.
-     * @param {Function} reject -  promise's reject function.
-     * @param {number} totalItensDir - total of files/directories inside of dir (parent's directory).
-     * @param {number} indexItem - Index of the present directory item, helping to check if it's time to end the file search.
      */
-    private checkAndApplyFilters(dir: string, item: string, resolve: Function, reject: Function, totalItensDir: number, indexItem: number) {
-        fs.stat(item, (err, stats) => {
+    private checkAndApplyFilters(dir: string, item: string): Promise<any> {
+        // fs.stat is called asyncronically. We we'll know it's done through the promise.
+        return new Promise( (resolve, reject) => {
+          fs.stat(item, (err, stats) => {
             if (stats.isDirectory()) {
                 // Should search recursively?
                 if (this.recursiveSearch) {
@@ -253,22 +250,20 @@ export class FileMatcher extends EventEmitter {
                         parentResolve: resolve
                     });
 
-                    this.readDirectory(item);
+                    // This item is done only when the directory is done
+                    this.readDirectory(item)
+                        .then(() => resolve());
+                } else {
+                  resolve();
                 }
             } else {
                 if (this.matchFilters(item, stats)) {
                     this.files.push(item);
                 }
-            }
-
-            if (totalItensDir === indexItem) {
-                let stillProcessingSubdir = this.processing.findIndex(processingItem => processingItem.parentDir === dir) > -1;
-
-                if (!stillProcessingSubdir) {
-                    this.endFileSearch(dir, resolve);
-                }
+                resolve();
             }
         });
+      });
     }
 
     /**
@@ -366,9 +361,8 @@ export class FileMatcher extends EventEmitter {
      * Deals with the end of file search, can be a subdirectory or directory.
      *
      * @param {string} dir - directory path.
-     * @param {any} resolve - promise's resolve.
      */
-    private endFileSearch(dir: string, resolve: any) {
+    private endFileSearch(dir: string) {
         let subDir = this.processing.find(processingItem => processingItem.dir === dir);
 
         if (subDir) {
@@ -385,8 +379,6 @@ export class FileMatcher extends EventEmitter {
             }
             this.emit('endSearchDirectory', this.files, totalOfFiles);
         }
-
-        resolve();
     }
 
     /**
@@ -397,32 +389,33 @@ export class FileMatcher extends EventEmitter {
     private filterFileContent(): Promise<any> {
         let self = this;
 
+        let errors = {};
         return new Promise((resolve, reject) => {
-            let matchingFiles: Array<string> = [];
-
             if (this.fileFilter.content && this.files && this.files.length > 0) {
-                this.files.some((file, index) => {
-                    this.readFileContent(file)
-                        .then((result) => {
-                            if (result) {
-                                let processed: number = (index + 1) / this.files.length;
-                                self.emit('contentMatch', file, processed);
-                                matchingFiles.push(result);
-                            }
-
-                            if ((self.files.length - 1) === index) {
-                                resolve(matchingFiles);
-                                return true;
-                            }
-                        }).catch(err => {
-                            reject(err);
-                            return true;
-                        });
-                    return false;
-                });
+              // Search async in all files. Resolve if found any. (Promise.all stops on first error)
+              Promise.all(
+                this.files.map((file, index) => {
+                  // Search for conent in each file. Record error and don't propagate
+                  return this.readFileContent(file)
+                    .then((result) => {
+                      if (result) {
+                        let processed: number = (index + 1) / this.files.length;
+                        self.emit('contentMatch', file, processed);
+                      }
+                      return result;
+                    }).catch( err => {
+                      errors[file] = err;
+                    });
+                })
+              ).then((matchingFiles) => {
+                // All promises ended in error:
+                if (Object.keys(errors).length === this.files.length) {
+                  reject(errors);
+                }
+                resolve(matchingFiles.filter((result) => result));
+              });
             } else {
-                matchingFiles = this.files;
-                resolve(matchingFiles);
+                resolve(this.files);
             }
         });
     }
@@ -450,19 +443,6 @@ export class FileMatcher extends EventEmitter {
                     resolve();
                 }
             });
-        });
-    }
-
-    /**
-     * Register all event listeners, done internally by this library.
-     */
-    private registerEventListeners(): void {
-        this.on('endSearchSubDirectory', (parentDir, resolve) => {
-            let stillProcessingSubdir = this.processing.findIndex(processingItem => processingItem.parentDir === parentDir) > -1;
-
-            if (!stillProcessingSubdir) {
-                this.endFileSearch(parentDir, resolve);
-            }
         });
     }
 
